@@ -1,6 +1,6 @@
 # LAI AI 2.0 🤖
 
-![LAI AI Banner](public/LAI AI.png)
+![LAI AI Banner](LAI AI.png)
 
 **LAI AI 2.0** is a modern, culturally-aware AI chatbot designed specifically for the **Lai Hakha-speaking community**. Built with the latest web technologies and powered by **Google Gemini**, it bridges the gap between advanced AI and local culture, providing a seamless bilingual experience.
 
