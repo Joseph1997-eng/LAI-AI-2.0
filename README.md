@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LAI AI 2.0 🤖
 
-## Getting Started
+![LAI AI Banner](public/joseph.jpg)
 
-First, run the development server:
+**LAI AI 2.0** is a modern, culturally-aware AI chatbot designed specifically for the **Lai Hakha-speaking community**. Built with the latest web technologies and powered by **Google Gemini**, it bridges the gap between advanced AI and local culture, providing a seamless bilingual experience.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+> *"Hmailei AI biaruahnak sining cu a tu ah rak hman ve."* (Experience the future of AI conversation now.)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ Key Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **🗣️ Bilingual Support**: Full support for **English** and **Lai Hakha** languages, including UI translations and AI responses.
+- **🧠 Advanced AI**: Powered by **Google Gemini Pro** and **Gemini Pro Vision** for intelligent text and image analysis.
+- **👁️ Vision Capabilities**: Upload images and ask questions about them in Lai Hakha or English.
+- **🎨 Modern UI/UX**:
+  - Glassmorphism design with smooth animations.
+  - Responsive Sidebar with dynamic layout adjustments.
+  - Dark/Light mode support with auto-detection.
+  - "Thinking" animations for a natural conversational feel.
+- **⚡ Real-time Streaming**: Fast, streaming responses for a fluid chat experience.
+- **📂 File Management**: Drag-and-drop file uploads with preview.
+- **🔐 Secure Authentication**: Integrated with **Supabase Auth** for secure user management.
+- **🗄️ Chat History**: Automatically saves conversations to Supabase database.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Tech Stack
 
-## Learn More
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **AI Model**: [Google Gemini API](https://ai.google.dev/)
+- **Database & Auth**: [Supabase](https://supabase.com/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
 
-To learn more about Next.js, take a look at the following resources:
+## 🚀 Getting Started
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Prerequisites
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Node.js 18+ installed
+- A Supabase project
+- A Google Cloud project with Gemini API enabled
 
-## Deploy on Vercel
+### Installation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Joseph1997-eng/LAI-AI-2.0.git
+   cd LAI-AI-2.0
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   Create a `.env.local` file in the root directory and add your keys:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   GOOGLE_API_KEY=your_gemini_api_key
+   ```
+
+4. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000) to see the app.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+**Built with ♡ for the Lai community by Joseph (Leoliver)**
