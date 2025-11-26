@@ -33,3 +33,8 @@ Joseph ရေ၊ Chat History အလုပ်လုပ်ဖို့ Supabase �
 - Google/GitHub OAuth Setup လုပ်ရပါမယ် (Login အလုပ်လုပ်ဖို့)
 
 အဆင်မပြေတာ ရှိရင် ပြန်မေးနိုင်ပါတယ်ခင်ဗျာ!
+
+### 5. Chat History Edit Feature (New)
+Chat History ကို Edit လုပ်နိုင်ဖို့ အောက်ပါ SQL ကို ထပ် run ပေးဖို့ လိုပါတယ်:
+1. `web/UPDATE_MESSAGES_POLICY.sql` ကို ဖွင့်ပါ။
+2. Copy ကူးပြီး SQL Editor မှာ Run ပါ။

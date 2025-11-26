@@ -130,3 +130,22 @@ export async function updateConversationTitle(
 
     return true;
 }
+
+export async function updateMessage(
+    messageId: string,
+    content: string
+): Promise<boolean> {
+    const supabase = createClient();
+
+    const { error } = await supabase
+        .from("messages")
+        .update({ content })
+        .eq("id", messageId);
+
+    if (error) {
+        console.error("Error updating message:", error);
+        return false;
+    }
+
+    return true;
+}

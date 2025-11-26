@@ -13,10 +13,12 @@ import {
     createConversation,
     getMessages,
     saveMessage,
+    updateMessage,
     type Conversation,
 } from "@/lib/db/conversations";
 
 type Message = {
+    id?: string;
     role: "user" | "model";
     parts: { text: string }[];
 };
@@ -86,11 +88,29 @@ export default function ChatPage() {
     const handleLoadConversation = async (conversationId: string) => {
         const msgs = await getMessages(conversationId);
         const formattedMessages: Message[] = msgs.map(m => ({
+            id: m.id,
             role: m.role,
             parts: [{ text: m.content }]
         }));
         setMessages(formattedMessages);
         setSelectedFiles([]);
+
+        // Set current conversation
+        // We need to fetch the conversation details too ideally, but for now just setting the ID might be enough 
+        // if we had a way to get the full conversation object. 
+        // But getMessages only returns messages.
+        // Let's assume the sidebar handles the selection and we just load messages.
+        // But we need currentConversation set for saving new messages.
+        // We can fetch it or just construct a partial one if we only need ID.
+        // Actually, we should probably fetch it.
+        // For now, let's just set the ID if we can't fetch easily, 
+        // but wait, createConversation returns the object.
+        // We can add getConversationById if needed, but for now let's assume 
+        // the user will select from sidebar which passes ID.
+        // We'll set a partial object or fetch it.
+        // Let's fetch it to be safe.
+        const { data } = await supabase.from('conversations').select('*').eq('id', conversationId).single();
+        if (data) setCurrentConversation(data);
     };
 
     const handleFileSelect = (files: File[]) => {
@@ -108,6 +128,22 @@ export default function ChatPage() {
             };
             reader.onerror = error => reject(error);
         });
+    };
+
+    const handleEditMessage = async (index: number, newContent: string) => {
+        const message = messages[index];
+        if (!message.id) return;
+
+        // Optimistic update
+        const updatedMessages = [...messages];
+        updatedMessages[index] = {
+            ...message,
+            parts: [{ text: newContent }]
+        };
+        setMessages(updatedMessages);
+
+        // Save to DB
+        await updateMessage(message.id, newContent);
     };
 
     const sendMessage = async () => {
@@ -134,11 +170,26 @@ export default function ChatPage() {
                 conversation = await createConversation(title);
                 if (conversation) {
                     setCurrentConversation(conversation);
+                } else {
+                    console.error("Failed to create conversation");
+                    // Optionally show error to user
                 }
             }
 
             if (conversation) {
-                await saveMessage(conversation.id, "user", messageText);
+                const savedMsg = await saveMessage(conversation.id, "user", messageText);
+                if (savedMsg) {
+                    setMessages(prev => {
+                        const newMsgs = [...prev];
+                        // Find the user message we just added (it's likely the last one or close to end)
+                        // We match by content and role and missing ID
+                        const idx = newMsgs.findIndex(m => m.role === 'user' && m.parts[0].text === messageText && !m.id);
+                        if (idx !== -1) {
+                            newMsgs[idx].id = savedMsg.id;
+                        }
+                        return newMsgs;
+                    });
+                }
             }
 
             const history = messages.map(m => ({
@@ -192,7 +243,17 @@ export default function ChatPage() {
             setIsStreaming(false);
 
             if (conversation && modelText) {
-                await saveMessage(conversation.id, "model", modelText);
+                const savedModelMsg = await saveMessage(conversation.id, "model", modelText);
+                if (savedModelMsg) {
+                    setMessages(prev => {
+                        const newMsgs = [...prev];
+                        const lastMsg = newMsgs[newMsgs.length - 1];
+                        if (lastMsg.role === 'model') {
+                            lastMsg.id = savedModelMsg.id;
+                        }
+                        return newMsgs;
+                    });
+                }
             }
         } catch (error) {
             console.error(error);
@@ -266,6 +327,7 @@ export default function ChatPage() {
                                     role={msg.role}
                                     content={msg.parts[0].text}
                                     isStreaming={isStreaming && idx === messages.length - 1}
+                                    onEdit={(newContent) => handleEditMessage(idx, newContent)}
                                 />
                             </motion.div>
                         ))}
