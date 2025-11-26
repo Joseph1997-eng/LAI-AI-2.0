@@ -217,7 +217,7 @@ export default function ChatPage() {
             >
                 <div className="absolute top-0 left-0 w-full h-full bg-[url('/grid.svg')] opacity-5 pointer-events-none" />
 
-                <header className="flex items-center justify-between p-4 border-b border-border glass z-10">
+                <header className="flex items-center justify-between p-4 pl-14 md:pl-4 border-b border-border glass z-10">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full overflow-hidden">
                             <Image
