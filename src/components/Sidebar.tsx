@@ -26,13 +26,21 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ onNewChat, onLoadConversation, onSidebarToggle }: SidebarProps) {
+    const [mounted, setMounted] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
-    const [isDark, setIsDark] = useState(true);
+    const [isDark, setIsDark] = useState(false);
     const [showAbout, setShowAbout] = useState(false);
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [userEmail, setUserEmail] = useState<string | null>(null);
 
+    // Handle mounting
     useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!mounted) return;
+
         const checkScreenSize = () => {
             const shouldOpen = window.innerWidth >= 768;
             setIsOpen(shouldOpen);
@@ -43,9 +51,11 @@ export default function Sidebar({ onNewChat, onLoadConversation, onSidebarToggle
         window.addEventListener('resize', checkScreenSize);
         return () => window.removeEventListener('resize', checkScreenSize);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [mounted]);
 
     useEffect(() => {
+        if (!mounted) return;
+
         const savedTheme = localStorage.getItem('theme');
 
         if (savedTheme === 'light') {
@@ -65,17 +75,21 @@ export default function Sidebar({ onNewChat, onLoadConversation, onSidebarToggle
                 localStorage.setItem('theme', 'light');
             }
         }
-    }, []);
+    }, [mounted]);
 
     useEffect(() => {
+        if (!mounted) return;
+
         const loadConversations = async () => {
             const convos = await getConversations();
             setConversations(convos);
         };
         loadConversations();
-    }, []);
+    }, [mounted]);
 
     useEffect(() => {
+        if (!mounted) return;
+
         const loadUser = async () => {
             const supabase = createClient();
             const { data: { user } } = await supabase.auth.getUser();
@@ -84,7 +98,7 @@ export default function Sidebar({ onNewChat, onLoadConversation, onSidebarToggle
             }
         };
         loadUser();
-    }, []);
+    }, [mounted]);
 
     const toggleSidebar = () => {
         const newState = !isOpen;
