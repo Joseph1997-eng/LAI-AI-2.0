@@ -112,24 +112,19 @@ export default function Sidebar({ onNewChat, onLoadConversation, onSidebarToggle
 
     return (
         <>
-            <button
-                onClick={toggleSidebar}
-                className="fixed top-4 left-4 z-50 p-2 rounded-lg glass hover:bg-white/10 transition-colors"
-            >
-                {isOpen ? <PanelLeftClose className="w-5 h-5" /> : <PanelLeftOpen className="w-5 h-5" />}
-            </button>
-
+            {/* Mobile overlay backdrop */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 z-30 md:hidden"
+                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 md:hidden"
                     onClick={() => setIsOpen(false)}
                 />
             )}
 
+            {/* Sidebar */}
             <aside
                 className={cn(
                     "fixed left-0 top-0 h-screen glass-card border-r border-white/10 transition-all duration-300 z-40 flex flex-col",
-                    isOpen ? "w-64 translate-x-0" : "w-0 -translate-x-full md:w-16"
+                    isOpen ? "w-64 translate-x-0" : "w-0 -translate-x-full md:w-16 md:translate-x-0"
                 )}
             >
                 <div className="flex-1 overflow-y-auto p-4 pt-16 space-y-4">
@@ -175,13 +170,15 @@ export default function Sidebar({ onNewChat, onLoadConversation, onSidebarToggle
 
                 <div className="p-4 border-t border-white/10 space-y-2">
                     {userEmail && (
-                        <div className="p-3 rounded-lg bg-white/5 flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-                                <User className="w-4 h-4" />
-                            </div>
-                            <div className={cn("flex-1 min-w-0", !isOpen && "md:hidden")}>
-                                <p className="text-sm font-medium truncate">{userEmail}</p>
-                                <p className="text-xs text-muted-foreground">Signed in</p>
+                        <div className="p-3 rounded-lg bg-white/5 mb-2">
+                            <div className={cn("flex flex-row items-center gap-3", !isOpen && "md:hidden")}>
+                                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                                    <User className="w-4 h-4" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium truncate">{userEmail}</p>
+                                    <p className="text-xs text-muted-foreground">Signed in</p>
+                                </div>
                             </div>
                         </div>
                     )}

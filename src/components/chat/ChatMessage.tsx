@@ -62,10 +62,10 @@ export default function ChatMessage({ role, content, isStreaming, onEdit }: Chat
 
             <div
                 className={cn(
-                    "max-w-[80%] md:max-w-[70%] rounded-2xl backdrop-blur-sm shadow-sm relative group",
+                    "rounded-2xl backdrop-blur-sm shadow-sm relative group",
                     role === "user"
-                        ? "bg-primary text-primary-foreground rounded-tr-none px-4 py-3"
-                        : "bg-muted/50 border border-white/5 rounded-tl-none p-4"
+                        ? "bg-primary text-primary-foreground rounded-tr-none px-4 py-3 w-fit max-w-[80%] md:max-w-[70%]"
+                        : "bg-muted/50 border border-white/5 rounded-tl-none p-4 max-w-[80%] md:max-w-[70%]"
                 )}
             >
                 {role === "model" ? (
