@@ -18,8 +18,8 @@ export async function POST(req: Request) {
         console.log("Received message:", message);
         console.log("Received files:", files?.length || 0);
 
-        if (!process.env.GEMINI_API_KEY) {
-            console.error("Error: GEMINI_API_KEY is missing");
+        if (!process.env.GOOGLE_API_KEY) {
+            console.error("Error: GOOGLE_API_KEY is missing");
             return NextResponse.json({ error: "API Key missing" }, { status: 500 });
         }
 

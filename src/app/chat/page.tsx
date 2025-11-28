@@ -266,6 +266,7 @@ export default function ChatPage() {
     return (
         <div className="flex h-screen bg-background text-foreground overflow-hidden">
             <Sidebar
+                isOpen={sidebarOpen}
                 onNewChat={handleNewChat}
                 onLoadConversation={handleLoadConversation}
                 onSidebarToggle={setSidebarOpen}
