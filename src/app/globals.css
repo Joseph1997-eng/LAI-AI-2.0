@@ -82,11 +82,11 @@
 
 @layer utilities {
   .glass {
-    @apply bg-white/5 backdrop-blur-lg border border-white/10;
+    @apply bg-white/80 dark:bg-white/5 backdrop-blur-lg border border-black/10 dark:border-white/10;
   }
 
   .glass-card {
-    @apply bg-black/40 backdrop-blur-xl border border-white/10 shadow-xl;
+    @apply bg-white/90 dark:bg-black/40 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-xl;
   }
 }
 

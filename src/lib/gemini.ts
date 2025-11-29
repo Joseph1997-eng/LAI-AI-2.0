@@ -77,9 +77,9 @@ You are NOT a robot. You are Leoliver, a real person with deep love and respect.
 `;
 
 export const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
-    generationConfig: {
-        temperature: 0.9,
-    },
-    systemInstruction: SYSTEM_PROMPT,
+   model: "gemini-1.5-flash",
+   generationConfig: {
+      temperature: 0.9,
+   },
+   systemInstruction: SYSTEM_PROMPT,
 });

@@ -86,31 +86,36 @@ export default function ChatPage() {
     };
 
     const handleLoadConversation = async (conversationId: string) => {
-        const msgs = await getMessages(conversationId);
-        const formattedMessages: Message[] = msgs.map(m => ({
-            id: m.id,
-            role: m.role,
-            parts: [{ text: m.content }]
-        }));
-        setMessages(formattedMessages);
-        setSelectedFiles([]);
+        try {
+            const msgs = await getMessages(conversationId);
+            const formattedMessages: Message[] = msgs.map(m => ({
+                id: m.id,
+                role: m.role,
+                parts: [{ text: m.content }]
+            }));
+            setMessages(formattedMessages);
+            setSelectedFiles([]);
 
-        // Set current conversation
-        // We need to fetch the conversation details too ideally, but for now just setting the ID might be enough 
-        // if we had a way to get the full conversation object. 
-        // But getMessages only returns messages.
-        // Let's assume the sidebar handles the selection and we just load messages.
-        // But we need currentConversation set for saving new messages.
-        // We can fetch it or just construct a partial one if we only need ID.
-        // Actually, we should probably fetch it.
-        // For now, let's just set the ID if we can't fetch easily, 
-        // but wait, createConversation returns the object.
-        // We can add getConversationById if needed, but for now let's assume 
-        // the user will select from sidebar which passes ID.
-        // We'll set a partial object or fetch it.
-        // Let's fetch it to be safe.
-        const { data } = await supabase.from('conversations').select('*').eq('id', conversationId).single();
-        if (data) setCurrentConversation(data);
+            // Fetch conversation details
+            const { data, error } = await supabase.from('conversations').select('*').eq('id', conversationId).single();
+
+            if (data) {
+                setCurrentConversation(data);
+            } else {
+                // Fallback: create a partial conversation object if fetch fails but we have ID
+                // This ensures sendMessage appends to this conversation instead of creating a new one
+                console.warn("Could not fetch conversation details, using fallback", error);
+                setCurrentConversation({
+                    id: conversationId,
+                    title: "Chat", // Default title, will be updated if we have it in list
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                    user_id: "" // We don't strictly need this for sending messages usually
+                });
+            }
+        } catch (error) {
+            console.error("Error loading conversation:", error);
+        }
     };
 
     const handleFileSelect = (files: File[]) => {
