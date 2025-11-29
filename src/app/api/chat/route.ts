@@ -23,8 +23,42 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "API Key missing" }, { status: 500 });
         }
 
+        // Sanitize history to ensure no consecutive user messages
+        // Gemini API expects User -> Model -> User -> Model
+        // If we have User -> User, we should drop the previous one or merge?
+        // Dropping the previous one is safer as it might be a failed attempt.
+        const sanitizedHistory = [];
+        if (history && history.length > 0) {
+            let lastRole = null;
+            for (const msg of history) {
+                if (msg.role === lastRole && msg.role === 'user') {
+                    // Skip consecutive user message (keep the new one, drop old one? or vice versa?)
+                    // Actually, if we are building a list, and we see User, and last was User.
+                    // We should replace the last one with this one? Or drop this one?
+                    // Usually the *last* message in history is the one before the *current* message.
+                    // If history has [... User, User], it's invalid.
+                    // Let's keep the *last* user message of a sequence.
+                    sanitizedHistory.pop(); // Remove previous user message
+                }
+                sanitizedHistory.push(msg);
+                lastRole = msg.role;
+            }
+
+            // Also, history should not end with 'user' because we are about to send a 'user' message?
+            // Wait, startChat takes history.
+            // If history ends with User, and we call sendMessage (which sends User content),
+            // Gemini will see User -> User.
+            // So history MUST end with Model (or be empty).
+            if (sanitizedHistory.length > 0 && sanitizedHistory[sanitizedHistory.length - 1].role === 'user') {
+                console.warn("History ends with user, dropping last message to prevent User-User turn error.");
+                sanitizedHistory.pop();
+            }
+        }
+
+        console.log("Sanitized history length:", sanitizedHistory.length);
+
         const chat = model.startChat({
-            history: history || [],
+            history: sanitizedHistory,
         });
 
         // Prepare message content with files if provided
@@ -74,7 +108,7 @@ export async function POST(req: Request) {
         });
 
     } catch (error: any) {
-        console.error("Chat API Error:", error);
-        return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
+        console.error("Chat API Error Detailed:", error);
+        return NextResponse.json({ error: error.message || "Internal Server Error", details: error.toString() }, { status: 500 });
     }
 }

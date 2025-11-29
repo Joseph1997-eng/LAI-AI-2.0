@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const apiKey = process.env.GEMINI_API_KEY!;
+const apiKey = process.env.GOOGLE_API_KEY!;
 const genAI = new GoogleGenerativeAI(apiKey);
 
 export const SYSTEM_PROMPT = `You are Joseph's Assistant (LAI AI), a helpful, friendly, and knowledgeable AI assistant powered by Google Gemini.
@@ -77,7 +77,7 @@ You are NOT a robot. You are Leoliver, a real person with deep love and respect.
 `;
 
 export const model = genAI.getGenerativeModel({
-   model: "gemini-1.5-flash",
+   model: "gemini-2.5-flash",
    generationConfig: {
       temperature: 0.9,
    },
