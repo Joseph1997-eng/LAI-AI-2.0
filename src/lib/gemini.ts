@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const apiKey = process.env.GOOGLE_API_KEY!;
+// Fallback to dummy key during build/dev if not set to prevent top-level crash
+const apiKey = process.env.GOOGLE_API_KEY || "missing-api-key";
 const genAI = new GoogleGenerativeAI(apiKey);
 
 export const SYSTEM_PROMPT = `# Role & Persona
