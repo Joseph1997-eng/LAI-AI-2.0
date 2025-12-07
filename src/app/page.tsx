@@ -34,7 +34,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-5xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60"
+          className="text-5xl md:text-7xl font-bold tracking-tight text-foreground"
         >
           Joseph's Assistant <br />
           <span className="text-primary">LAI AI</span>

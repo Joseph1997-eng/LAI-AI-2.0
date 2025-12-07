@@ -47,6 +47,18 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
         setMounted(true);
     }, []);
 
+    // const updateThemeColor = (theme: 'light' | 'dark') => {
+    //     const color = theme === 'dark' ? '#09090b' : '#ffffff';
+    //     // Update or create meta tag. We remove existing ones to handle overrides reliably.
+    //     const metaTags = document.querySelectorAll('meta[name="theme-color"]');
+    //     metaTags.forEach(tag => tag.remove());
+    //
+    //     const meta = document.createElement('meta');
+    //     meta.name = 'theme-color';
+    //     meta.content = color;
+    //     document.head.appendChild(meta);
+    // };
+
     useEffect(() => {
         if (!mounted) return;
 
@@ -54,18 +66,22 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
         if (savedTheme === 'light') {
             setIsDark(false);
             document.documentElement.classList.remove('dark');
+            // updateThemeColor('light');
         } else if (savedTheme === 'dark') {
             setIsDark(true);
             document.documentElement.classList.add('dark');
+            // updateThemeColor('dark');
         } else {
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             setIsDark(prefersDark);
             if (prefersDark) {
                 document.documentElement.classList.add('dark');
                 localStorage.setItem('theme', 'dark');
+                // updateThemeColor('dark');
             } else {
                 document.documentElement.classList.remove('dark');
                 localStorage.setItem('theme', 'light');
+                // updateThemeColor('light');
             }
         }
     }, [mounted]);
@@ -106,9 +122,11 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
         if (newTheme) {
             document.documentElement.classList.add('dark');
             localStorage.setItem('theme', 'dark');
+            // updateThemeColor('dark');
         } else {
             document.documentElement.classList.remove('dark');
             localStorage.setItem('theme', 'light');
+            // updateThemeColor('light');
         }
     };
 
@@ -158,7 +176,7 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
             {/* Sidebar - Gemini Style */}
             <aside
                 className={cn(
-                    "fixed z-40 flex flex-col glass-card border-r border-white/10 dark:border-white/10 border-black/10 transition-all duration-300",
+                    "fixed z-40 flex flex-col glass-card border-r border-border transition-all duration-300",
                     // Desktop: Vertical icon bar (Gemini style)
                     "md:left-0 md:top-0 md:h-screen",
                     isOpen ? "md:w-64" : "md:w-16",
@@ -170,17 +188,17 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
                 {/* Desktop Layout */}
                 <div className="hidden md:flex md:flex-col h-full">
                     {/* Top: Burger & New Chat */}
-                    <div className="flex flex-col items-center p-3 space-y-3 border-b border-white/10 dark:border-white/10 border-black/10">
+                    <div className="flex flex-col items-center p-3 space-y-3 border-b border-border">
                         <button
                             onClick={toggleSidebar}
-                            className="p-3 hover:bg-white/10 dark:hover:bg-white/10 hover:bg-black/5 rounded-lg transition-colors"
+                            className="p-3 hover:bg-muted/50 rounded-lg transition-colors"
                             title="Toggle sidebar"
                         >
                             <Menu className="w-6 h-6 text-foreground" />
                         </button>
                         <button
                             onClick={onNewChat}
-                            className="p-3 hover:bg-white/10 dark:hover:bg-white/10 hover:bg-black/5 rounded-lg transition-colors"
+                            className="p-3 hover:bg-muted/50 rounded-lg transition-colors"
                             title="New Chat"
                         >
                             <Plus className="w-6 h-6 text-foreground" />
@@ -193,7 +211,7 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
                             <h3 className="text-xs font-semibold text-muted-foreground uppercase px-2 mb-2">Recent Chats</h3>
                             <div className="space-y-1">
                                 {conversations.map((convo) => (
-                                    <div key={convo.id} className="group relative flex items-center rounded-lg hover:bg-white/5 dark:hover:bg-white/5 hover:bg-black/5">
+                                    <div key={convo.id} className="group relative flex items-center rounded-lg hover:bg-muted/50">
                                         <button onClick={() => handleConversationClick(convo.id)} className="flex-1 p-3 flex items-center gap-2 text-sm text-left min-w-0">
                                             <MessageSquare className="w-4 h-4 flex-shrink-0 text-foreground" />
                                             {editingId === convo.id ? (
@@ -400,28 +418,28 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
                         className="glass-card p-6 rounded-2xl max-w-md w-full space-y-4"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <h2 className="text-2xl font-bold flex items-center gap-2 text-zinc-900 dark:text-zinc-100">
+                        <h2 className="text-2xl font-bold flex items-center gap-2 text-foreground">
                             <Info className="w-6 h-6 text-primary" />
                             About LAI AI
                         </h2>
 
                         <div className="space-y-3">
-                            <p className="text-sm leading-relaxed text-zinc-800 dark:text-zinc-200">
+                            <p className="text-sm leading-relaxed text-foreground">
                                 <strong className="text-primary">LAI AI</strong> (Leoliver&apos;s Assistant Intelligence) is a culturally-aware AI chatbot
                                 designed to serve the <strong>Lai Hakha-speaking community</strong> with warmth, wisdom, and care.
                             </p>
-                            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                            <p className="text-sm text-muted-foreground leading-relaxed">
                                 Built with cutting-edge technology (Next.js, Google Gemini Vision API), LAI AI preserves and celebrates
                                 <strong> Lai language and culture</strong> while providing modern AI assistance.
                             </p>
                         </div>
 
                         <div className="space-y-3 border-t border-black/10 dark:border-white/10 pt-4">
-                            <p className="text-sm leading-relaxed text-zinc-800 dark:text-zinc-200">
+                            <p className="text-sm leading-relaxed text-foreground">
                                 <strong className="text-primary">LAI AI</strong> (Leoliver&apos;s Assistant Intelligence) cu Lai Hakha holh hman mi
                                 zatlangbu caah <strong>lungthin a thiang, mifim, le dawtmi</strong> tein biaruahnak a pe mi AI chatbot a si.
                             </p>
-                            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                            <p className="text-sm text-muted-foreground leading-relaxed">
                                 Technology thar (Next.js, Google Gemini Vision API) hmang in <strong>Lai holh le nunphung</strong> kan humhim le kan upat.
                                 Vawleicung Lai holh hman mi kip caah AI technology kan pe.
                             </p>
@@ -429,7 +447,7 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
 
                         <div className="bg-primary/10 rounded-lg p-3 space-y-2">
                             <p className="text-xs font-semibold text-primary">Core Values / Tum Duhnak Ṭha Bik:</p>
-                            <div className="grid grid-cols-2 gap-2 text-xs text-zinc-800 dark:text-zinc-200">
+                            <div className="grid grid-cols-2 gap-2 text-xs text-foreground">
                                 <div>♡ Siaherhnak (Deep Love)</div>
                                 <div>♡ Mifimnak (Wisdom)</div>
                                 <div>♡ Hawikomnak (Friendship)</div>
@@ -437,7 +455,7 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
                             </div>
                         </div>
 
-                        <p className="text-xs text-center text-zinc-500 dark:text-zinc-400 italic">
+                        <p className="text-xs text-center text-muted-foreground italic">
                             Built with ♡ for the Lai community by Joseph (Leoliver)
                         </p>
 

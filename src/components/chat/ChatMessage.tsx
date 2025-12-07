@@ -70,29 +70,29 @@ export default function ChatMessage({ role, content, isStreaming, onEdit }: Chat
             >
                 {role === "model" ? (
                     <>
-                        <div className="prose prose-invert prose-sm max-w-none">
+                        <div className="prose dark:prose-invert prose-sm max-w-none">
                             <ReactMarkdown
                                 remarkPlugins={[remarkGfm]}
                                 components={{
                                     table: ({ node, ...props }) => (
                                         <div className="overflow-x-auto my-4">
-                                            <table className="min-w-full divide-y divide-gray-700" {...props} />
+                                            <table className="min-w-full divide-y divide-border" {...props} />
                                         </div>
                                     ),
                                     th: ({ node, ...props }) => (
-                                        <th className="px-4 py-2 bg-gray-800 text-left text-xs font-medium text-gray-300 uppercase tracking-wider" {...props} />
+                                        <th className="px-4 py-2 bg-muted text-left text-xs font-medium text-muted-foreground uppercase tracking-wider" {...props} />
                                     ),
                                     td: ({ node, ...props }) => (
-                                        <td className="px-4 py-2 border-t border-gray-700 text-sm" {...props} />
+                                        <td className="px-4 py-2 border-t border-border text-sm" {...props} />
                                     ),
                                     code: ({ node, inline, ...props }: any) =>
                                         inline ? (
-                                            <code className="bg-gray-800 px-1.5 py-0.5 rounded text-sm" {...props} />
+                                            <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-foreground" {...props} />
                                         ) : (
-                                            <code className="block bg-gray-900 p-3 rounded-lg overflow-x-auto text-sm" {...props} />
+                                            <code className="block bg-zinc-950 dark:bg-zinc-900 text-zinc-50 p-3 rounded-lg overflow-x-auto text-sm font-mono" {...props} />
                                         ),
                                     pre: ({ node, ...props }) => (
-                                        <pre className="bg-gray-900 p-4 rounded-lg overflow-x-auto my-2" {...props} />
+                                        <pre className="bg-zinc-950 dark:bg-zinc-900 text-zinc-50 p-4 rounded-lg overflow-x-auto my-2" {...props} />
                                     ),
                                 }}
                             >
@@ -106,13 +106,13 @@ export default function ChatMessage({ role, content, isStreaming, onEdit }: Chat
                         {!isStreaming && content && (
                             <button
                                 onClick={handleCopy}
-                                className="absolute top-2 right-2 p-1.5 rounded-md bg-gray-800/50 hover:bg-gray-700/50 opacity-0 group-hover:opacity-100 transition-opacity"
+                                className="absolute top-2 right-2 p-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
                                 title="Copy message"
                             >
                                 {copied ? (
-                                    <Check className="w-4 h-4 text-green-400" />
+                                    <Check className="w-4 h-4 text-green-500" />
                                 ) : (
-                                    <Copy className="w-4 h-4" />
+                                    <Copy className="w-4 h-4 text-muted-foreground" />
                                 )}
                             </button>
                         )}
@@ -124,7 +124,7 @@ export default function ChatMessage({ role, content, isStreaming, onEdit }: Chat
                                 <textarea
                                     value={editContent}
                                     onChange={(e) => setEditContent(e.target.value)}
-                                    className="w-full bg-black/20 text-white rounded p-2 text-sm focus:outline-none focus:ring-1 focus:ring-white/50 resize-none"
+                                    className="w-full bg-background border border-input rounded p-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
                                     rows={3}
                                     autoFocus
                                 />
