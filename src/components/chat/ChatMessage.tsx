@@ -70,7 +70,7 @@ export default function ChatMessage({ role, content, isStreaming, onEdit }: Chat
             >
                 {role === "model" ? (
                     <>
-                        <div className="prose dark:prose-invert prose-sm max-w-none">
+                        <div className="prose dark:prose-invert prose-sm max-w-none text-justify break-words">
                             <ReactMarkdown
                                 remarkPlugins={[remarkGfm]}
                                 components={{
@@ -89,10 +89,10 @@ export default function ChatMessage({ role, content, isStreaming, onEdit }: Chat
                                         inline ? (
                                             <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-foreground" {...props} />
                                         ) : (
-                                            <code className="block bg-zinc-950 dark:bg-zinc-900 text-zinc-50 p-3 rounded-lg overflow-x-auto text-sm font-mono" {...props} />
+                                            <code className="block hljs p-3 rounded-lg overflow-x-auto text-sm font-mono" {...props} />
                                         ),
                                     pre: ({ node, ...props }) => (
-                                        <pre className="bg-zinc-950 dark:bg-zinc-900 text-zinc-50 p-4 rounded-lg overflow-x-auto my-2" {...props} />
+                                        <pre className="rounded-lg overflow-x-auto my-2 border border-border" {...props} />
                                     ),
                                 }}
                             >
