@@ -11,6 +11,9 @@ async function fileToBase64(file: { data: string; mimeType: string }) {
     };
 }
 
+// Define types locally or import from SDK
+type Part = { text: string } | { inlineData: { data: string; mimeType: string } };
+
 export async function POST(req: Request) {
     try {
         const { message, history, files } = await req.json();
@@ -62,11 +65,11 @@ export async function POST(req: Request) {
         });
 
         // Prepare message content with files if provided
-        let messageContent: any;
+        let messageContent: string | Part[];
 
         if (files && files.length > 0) {
             // For multimodal content (text + images)
-            const parts: any[] = [];
+            const parts: Part[] = [];
 
             // Add text part
             if (message) {
@@ -107,8 +110,9 @@ export async function POST(req: Request) {
             headers: { "Content-Type": "text/plain; charset=utf-8" },
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Chat API Error Detailed:", error);
-        return NextResponse.json({ error: error.message || "Internal Server Error", details: error.toString() }, { status: 500 });
+        const errorMessage = error instanceof Error ? error.message : "Internal Server Error";
+        return NextResponse.json({ error: errorMessage, details: String(error) }, { status: 500 });
     }
 }

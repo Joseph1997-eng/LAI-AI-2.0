@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, User, Mail, Calendar } from "lucide-react";
+import { type User } from "@supabase/supabase-js";
+import { ArrowLeft, User as UserIcon, Mail, Calendar } from "lucide-react";
 
 export default function ProfilePage() {
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const supabase = createClient();
     const router = useRouter();
@@ -55,7 +56,7 @@ export default function ProfilePage() {
                                     className="w-full h-full object-cover"
                                 />
                             ) : (
-                                <User className="w-12 h-12 text-primary-foreground" />
+                                <UserIcon className="w-12 h-12 text-primary-foreground" />
                             )}
                         </div>
                         <div>
@@ -66,7 +67,7 @@ export default function ProfilePage() {
 
                     <div className="space-y-6">
                         <div className="flex items-start gap-4 p-4 rounded-lg bg-muted/30">
-                            <User className="w-5 h-5 text-primary mt-1" />
+                            <UserIcon className="w-5 h-5 text-primary mt-1" />
                             <div className="flex-1">
                                 <p className="text-sm text-muted-foreground mb-1">User ID</p>
                                 <p className="font-mono text-sm">{user?.id}</p>

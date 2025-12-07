@@ -36,7 +36,7 @@ export default function Home() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="text-5xl md:text-7xl font-bold tracking-tight text-foreground"
         >
-          Joseph's Assistant <br />
+          Joseph&apos;s Assistant <br />
           <span className="text-primary">LAI AI</span>
         </motion.h1>
 

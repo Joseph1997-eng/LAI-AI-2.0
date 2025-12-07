@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import {
     Plus,
     MessageSquare,
@@ -44,6 +43,7 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
 
     // Handle mounting
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         setMounted(true);
     }, []);
 
@@ -64,6 +64,7 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
 
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'light') {
+            // eslint-disable-next-line react-hooks/exhaustive-deps
             setIsDark(false);
             document.documentElement.classList.remove('dark');
             // updateThemeColor('light');

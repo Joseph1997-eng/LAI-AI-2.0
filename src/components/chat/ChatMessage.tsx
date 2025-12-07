@@ -85,11 +85,11 @@ export default function ChatMessage({ role, content, isStreaming, onEdit }: Chat
                                     td: ({ node, ...props }) => (
                                         <td className="px-4 py-2 border-t border-border text-sm" {...props} />
                                     ),
-                                    code: ({ node, inline, ...props }: any) => {
+                                    code: ({ inline, className, children, ...props }: React.ComponentPropsWithoutRef<'code'> & { inline?: boolean }) => {
                                         if (inline) {
-                                            return <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-foreground" {...props} />;
+                                            return <code className={cn("bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-foreground", className)} {...props}>{children}</code>;
                                         }
-                                        const match = /language-(\w+)/.exec(props.className || '');
+                                        const match = /language-(\w+)/.exec(className || '');
                                         const lang = match ? match[1] : '';
                                         return (
                                             <div className="rounded-lg overflow-hidden my-4 border border-border shadow-sm">
@@ -97,7 +97,7 @@ export default function ChatMessage({ role, content, isStreaming, onEdit }: Chat
                                                     <span className="text-xs font-medium text-zinc-400 uppercase">{lang || 'Code'}</span>
                                                     <button
                                                         onClick={() => {
-                                                            const text = String(props.children).replace(/\n$/, '');
+                                                            const text = String(children).replace(/\n$/, '');
                                                             navigator.clipboard.writeText(text);
                                                             setCopied(true);
                                                             setTimeout(() => setCopied(false), 2000);
@@ -109,12 +109,14 @@ export default function ChatMessage({ role, content, isStreaming, onEdit }: Chat
                                                     </button>
                                                 </div>
                                                 <div className="bg-[#0d1117] p-4 overflow-x-auto">
-                                                    <code className="block hljs text-zinc-100 text-sm font-mono leading-relaxed" {...props} />
+                                                    <code className={`block hljs text-zinc-100 text-sm font-mono leading-relaxed ${className || ''}`} {...props}>
+                                                        {children}
+                                                    </code>
                                                 </div>
                                             </div>
                                         );
                                     },
-                                    pre: ({ node, ...props }) => (
+                                    pre: ({ ...props }) => (
                                         <>{props.children}</>
                                     ),
                                 }}

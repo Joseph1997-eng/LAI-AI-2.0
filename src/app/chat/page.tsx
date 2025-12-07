@@ -318,7 +318,7 @@ export default function ChatPage() {
                         </div>
                         <div>
                             <span className="font-bold text-lg">LAI AI</span>
-                            <p className="text-xs text-muted-foreground">Joseph's Assistant</p>
+                            <p className="text-xs text-muted-foreground">Joseph&apos;s Assistant</p>
                         </div>
                     </div>
                     <button onClick={handleLogout} className="p-2 hover:bg-accent rounded-full transition-colors" title="Sign Out">
@@ -338,7 +338,7 @@ export default function ChatPage() {
                                     className="object-cover"
                                 />
                             </div>
-                            <p className="text-lg font-medium">Start a conversation with Joseph's Assistant</p>
+                            <p className="text-lg font-medium">Start a conversation with Joseph&apos;s Assistant</p>
                             <p className="text-sm">Lai holh in biaruah khawh ka si.</p>
                         </div>
                     )}
