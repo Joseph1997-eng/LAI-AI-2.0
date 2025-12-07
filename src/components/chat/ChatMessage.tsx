@@ -85,14 +85,37 @@ export default function ChatMessage({ role, content, isStreaming, onEdit }: Chat
                                     td: ({ node, ...props }) => (
                                         <td className="px-4 py-2 border-t border-border text-sm" {...props} />
                                     ),
-                                    code: ({ node, inline, ...props }: any) =>
-                                        inline ? (
-                                            <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-foreground" {...props} />
-                                        ) : (
-                                            <code className="block hljs p-3 rounded-lg overflow-x-auto text-sm font-mono" {...props} />
-                                        ),
+                                    code: ({ node, inline, ...props }: any) => {
+                                        if (inline) {
+                                            return <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-foreground" {...props} />;
+                                        }
+                                        const match = /language-(\w+)/.exec(props.className || '');
+                                        const lang = match ? match[1] : '';
+                                        return (
+                                            <div className="rounded-lg overflow-hidden my-4 border border-border shadow-sm">
+                                                <div className="flex items-center justify-between px-4 py-2 bg-zinc-900 border-b border-zinc-800">
+                                                    <span className="text-xs font-medium text-zinc-400 uppercase">{lang || 'Code'}</span>
+                                                    <button
+                                                        onClick={() => {
+                                                            const text = String(props.children).replace(/\n$/, '');
+                                                            navigator.clipboard.writeText(text);
+                                                            setCopied(true);
+                                                            setTimeout(() => setCopied(false), 2000);
+                                                        }}
+                                                        className="text-zinc-400 hover:text-zinc-100 transition-colors"
+                                                        title="Copy code"
+                                                    >
+                                                        {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                                                    </button>
+                                                </div>
+                                                <div className="bg-[#0d1117] p-4 overflow-x-auto">
+                                                    <code className="block hljs text-zinc-100 text-sm font-mono leading-relaxed" {...props} />
+                                                </div>
+                                            </div>
+                                        );
+                                    },
                                     pre: ({ node, ...props }) => (
-                                        <pre className="rounded-lg overflow-x-auto my-2 border border-border" {...props} />
+                                        <>{props.children}</>
                                     ),
                                 }}
                             >
@@ -106,7 +129,7 @@ export default function ChatMessage({ role, content, isStreaming, onEdit }: Chat
                         {!isStreaming && content && (
                             <button
                                 onClick={handleCopy}
-                                className="absolute top-2 right-2 p-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                                className="absolute top-2 right-2 p-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/10 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                                 title="Copy message"
                             >
                                 {copied ? (
