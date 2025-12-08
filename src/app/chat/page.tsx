@@ -286,6 +286,7 @@ export default function ChatPage() {
                 return newMsgs;
             });
 
+<<<<<<< HEAD
             // Set error message in Lai language (Remh Ciami)
             if (error instanceof Error) {
                 if (error.message === 'TIMEOUT') {
@@ -300,6 +301,19 @@ export default function ChatPage() {
                 }
             } else {
                 setError("Harnak tlawmpal a um. Zangfah tein tuah ṭhan.");
+=======
+            // Set error message in Lai language
+            if (error instanceof Error) {
+                if (error.message === 'TIMEOUT') {
+                    setError("Hngak khawh a rei deuhdeuh. Tivei hnih in i fel law.");
+                } else if (error.message.includes('API Key')) {
+                    setError("API key biafelmiam a um. Administrator ah a hriamhnak petu.");
+                } else {
+                    setError("Biafelmiam a um. Tivei na fel bah law.");
+                }
+            } else {
+                setError("Biafelmiam a um. Tivei na fel bah law.");
+>>>>>>> main
             }
         } finally {
             setLoading(false);
