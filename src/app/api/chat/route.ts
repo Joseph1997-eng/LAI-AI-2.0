@@ -18,13 +18,26 @@ export async function POST(req: Request) {
     try {
         const { message, history, files } = await req.json();
 
-        console.log("Received message:", message);
-        console.log("Received files:", files?.length || 0);
+        console.log("=== Chat API Request ===");
+        console.log("Message:", message);
+        console.log("History length:", history?.length || 0);
+        console.log("Files count:", files?.length || 0);
 
         if (!process.env.GOOGLE_API_KEY) {
-            console.error("Error: GOOGLE_API_KEY is missing");
-            return NextResponse.json({ error: "API Key missing" }, { status: 500 });
+            console.error("ERROR: GOOGLE_API_KEY is not defined in environment variables");
+            return NextResponse.json({
+                error: "API Key missing - please contact administrator"
+            }, { status: 500 });
         }
+
+        if (process.env.GOOGLE_API_KEY === "missing-api-key") {
+            console.error("ERROR: GOOGLE_API_KEY is set to fallback value");
+            return NextResponse.json({
+                error: "API Key not configured properly"
+            }, { status: 500 });
+        }
+
+        console.log("API Key present:", process.env.GOOGLE_API_KEY.substring(0, 10) + "...");
 
         // Sanitize history to ensure no consecutive user messages
         // Gemini API expects User -> Model -> User -> Model
@@ -89,18 +102,28 @@ export async function POST(req: Request) {
             messageContent = message;
         }
 
+        console.log("Sending message to Gemini API...");
         const result = await chat.sendMessageStream(messageContent);
+        console.log("Gemini API response started");
 
         const stream = new ReadableStream({
             async start(controller) {
                 try {
+                    let chunkCount = 0;
                     for await (const chunk of result.stream) {
                         const chunkText = chunk.text();
+                        chunkCount++;
+                        if (chunkCount % 10 === 0) {
+                            console.log(`Streamed ${chunkCount} chunks so far...`);
+                        }
                         controller.enqueue(new TextEncoder().encode(chunkText));
                     }
+                    console.log(`Stream completed. Total chunks: ${chunkCount}`);
                     controller.close();
                 } catch (streamError) {
                     console.error("Stream Error:", streamError);
+                    const errorText = streamError instanceof Error ? streamError.message : "Streaming failed";
+                    controller.enqueue(new TextEncoder().encode(`\n\n[Error: ${errorText}]`));
                     controller.error(streamError);
                 }
             },
@@ -111,8 +134,16 @@ export async function POST(req: Request) {
         });
 
     } catch (error: unknown) {
-        console.error("Chat API Error Detailed:", error);
+        console.error("=== Chat API Error ===");
+        console.error("Error type:", error instanceof Error ? error.constructor.name : typeof error);
+        console.error("Error message:", error instanceof Error ? error.message : String(error));
+        console.error("Full error:", error);
+
         const errorMessage = error instanceof Error ? error.message : "Internal Server Error";
-        return NextResponse.json({ error: errorMessage, details: String(error) }, { status: 500 });
+        return NextResponse.json({
+            error: errorMessage,
+            details: String(error),
+            timestamp: new Date().toISOString()
+        }, { status: 500 });
     }
 }

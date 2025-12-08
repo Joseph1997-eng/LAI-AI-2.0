@@ -42,6 +42,7 @@ export default function ChatPage() {
     const [isStreaming, setIsStreaming] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const supabase = createClient();
     const router = useRouter();
@@ -154,6 +155,9 @@ export default function ChatPage() {
     const sendMessage = async () => {
         if ((!input.trim() && selectedFiles.length === 0) || loading) return;
 
+        // Clear any previous errors
+        setError(null);
+
         let messageText = input;
         if (selectedFiles.length > 0) {
             const fileNames = selectedFiles.map(f => f.name).join(", ");
@@ -168,6 +172,11 @@ export default function ChatPage() {
         setLoading(true);
         setIsStreaming(true);
 
+        // Timeout mechanism (30 seconds)
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('TIMEOUT')), 30000);
+        });
+
         try {
             let conversation = currentConversation;
             if (!conversation) {
@@ -177,7 +186,7 @@ export default function ChatPage() {
                     setCurrentConversation(conversation);
                 } else {
                     console.error("Failed to create conversation");
-                    // Optionally show error to user
+                    throw new Error("Failed to create conversation");
                 }
             }
 
@@ -186,8 +195,6 @@ export default function ChatPage() {
                 if (savedMsg) {
                     setMessages(prev => {
                         const newMsgs = [...prev];
-                        // Find the user message we just added (it's likely the last one or close to end)
-                        // We match by content and role and missing ID
                         const idx = newMsgs.findIndex(m => m.role === 'user' && m.parts[0].text === messageText && !m.id);
                         if (idx !== -1) {
                             newMsgs[idx].id = savedMsg.id;
@@ -210,7 +217,8 @@ export default function ChatPage() {
                 }))
             );
 
-            const response = await fetch("/api/chat", {
+            // Race between API call and timeout
+            const fetchPromise = fetch("/api/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -220,7 +228,12 @@ export default function ChatPage() {
                 }),
             });
 
-            if (!response.ok) throw new Error("Failed to send message");
+            const response = await Promise.race([fetchPromise, timeoutPromise]) as Response;
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+                throw new Error(errorData.error || "Failed to send message");
+            }
             if (!response.body) throw new Error("No response body");
 
             const reader = response.body.getReader();
@@ -261,8 +274,30 @@ export default function ChatPage() {
                 }
             }
         } catch (error) {
-            console.error(error);
+            console.error("Chat error:", error);
             setIsStreaming(false);
+
+            // Remove the empty model message if it was added
+            setMessages(prev => {
+                const newMsgs = [...prev];
+                if (newMsgs.length > 0 && newMsgs[newMsgs.length - 1].role === 'model' && !newMsgs[newMsgs.length - 1].parts[0].text) {
+                    newMsgs.pop();
+                }
+                return newMsgs;
+            });
+
+            // Set error message in Lai language
+            if (error instanceof Error) {
+                if (error.message === 'TIMEOUT') {
+                    setError("Hngak khawh a rei deuhdeuh. Tivei hnih in i fel law.");
+                } else if (error.message.includes('API Key')) {
+                    setError("API key biafelmiam a um. Administrator ah a hriamhnak petu.");
+                } else {
+                    setError("Biafelmiam a um. Tivei na fel bah law.");
+                }
+            } else {
+                setError("Biafelmiam a um. Tivei na fel bah law.");
+            }
         } finally {
             setLoading(false);
         }
@@ -378,6 +413,46 @@ export default function ChatPage() {
                                 </div>
                                 <div className="bg-muted/50 border border-white/5 rounded-2xl rounded-tl-none p-4">
                                     <ThinkingAnimation />
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {error && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="flex justify-center"
+                        >
+                            <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 max-w-md">
+                                <div className="flex items-start gap-3">
+                                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center">
+                                        <span className="text-red-500 text-sm">⚠</span>
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-red-400 text-sm mb-3">{error}</p>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => {
+                                                    setError(null);
+                                                    // Retry by getting the last user message and resending
+                                                    const lastUserMsg = messages.filter(m => m.role === 'user').pop();
+                                                    if (lastUserMsg) {
+                                                        setInput(lastUserMsg.parts[0].text);
+                                                    }
+                                                }}
+                                                className="px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-sm transition-colors"
+                                            >
+                                                Tivei fel biak
+                                            </button>
+                                            <button
+                                                onClick={() => setError(null)}
+                                                className="px-3 py-1 bg-white/5 hover:bg-white/10 text-muted-foreground rounded-lg text-sm transition-colors"
+                                            >
+                                                Dismiss
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </motion.div>
