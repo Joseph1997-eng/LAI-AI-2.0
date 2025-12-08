@@ -2,6 +2,12 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Fallback to dummy key during build/dev if not set to prevent top-level crash
 const apiKey = process.env.GOOGLE_API_KEY || "missing-api-key";
+
+// Warn in development if API key is missing
+if (apiKey === "missing-api-key" && process.env.NODE_ENV === "development") {
+   console.warn("⚠️  WARNING: GOOGLE_API_KEY is not set. AI features will not work.");
+}
+
 const genAI = new GoogleGenerativeAI(apiKey);
 
 export const SYSTEM_PROMPT = `# Role & Identity
@@ -50,3 +56,16 @@ export const model = genAI.getGenerativeModel({
    },
    systemInstruction: SYSTEM_PROMPT,
 });
+
+// Helper function to validate API configuration
+export function isGeminiConfigured(): boolean {
+   return apiKey !== "missing-api-key" && apiKey.length > 0;
+}
+
+// Export for debugging purposes
+export function getApiKeyStatus(): string {
+   if (!apiKey || apiKey === "missing-api-key") {
+      return "API Key: NOT SET";
+   }
+   return `API Key: SET (${apiKey.substring(0, 10)}...)`;
+}
