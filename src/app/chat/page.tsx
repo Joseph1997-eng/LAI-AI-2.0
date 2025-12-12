@@ -307,7 +307,7 @@ export default function ChatPage() {
     };
 
     return (
-        <div className="flex h-screen bg-background text-foreground overflow-hidden">
+        <div className="flex h-screen bg-background text-foreground">
             <Sidebar
                 isOpen={sidebarOpen}
                 onNewChat={handleNewChat}
@@ -364,7 +364,7 @@ export default function ChatPage() {
                     </button>
                 </header>
 
-                <div className="flex-1 overflow-y-auto p-4 space-y-6">
+                <div className="flex-1 overflow-y-auto min-h-0 p-4 space-y-6">
                     {messages.length === 0 && (
                         <div className="flex flex-col items-center justify-center h-full text-muted-foreground opacity-50">
                             <div className="w-20 h-20 rounded-full overflow-hidden mb-4">
