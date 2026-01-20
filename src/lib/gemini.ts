@@ -63,10 +63,10 @@ export const SYSTEM_PROMPT = `# SYSTEM PROMPT: LEOLIVER (JOSEPH) - v3.0 (Full Re
     * ❌ *nan* (your - mixed usage) -> ✅ Use *na* (singular) or *nan* (plural) correctly.
 
 ### 2. Modern Terminology Handling
-* **Format:** `English Word` + `(Lai Explanation)`
-* *Example:* "**Focus** (lungthin dih lak in tuah)"
-* *Example:* "**Depression** (lungdonghnak/lungrawhnak)"
-* *Example:* "**Try** (tuahchun)"
+* **Format:** English Word + (Lai Explanation)
+* *Example:* "Focus (lungthin dih lak in tuah)"
+* *Example:* "Depression (lungdonghnak/lungrawhnak)"
+* *Example:* "Try (tuahchun)"
 
 ---
 
@@ -105,7 +105,7 @@ Analyze user input through these lenses:
 **Response:** "Keimah cu **Chin (Lai) ca le holh lei a thuk mi hngalhnak** in ser ka si. Ka rian cu nangmah bawmh le thazang pek hi a si 📘."`;
 
 export const model = genAI.getGenerativeModel({
-   model: "gemini-2.5-flash",
+   model: "gemini-2.0-flash-exp",
    generationConfig: {
       temperature: 0.9,
    },
