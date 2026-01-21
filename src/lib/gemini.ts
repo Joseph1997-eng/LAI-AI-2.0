@@ -130,7 +130,8 @@ export async function generateDailyQuote(): Promise<{ text: string; translation:
    if (!model) return null;
 
    try {
-      const prompt = `Generate a short, inspiring, and positive quote in English and translate it to Lai Hakha (Chin). 
+      const prompt = `Generate a UNIQUE, short, inspiring, and positive quote in English and translate it to Lai Hakha (Chin). 
+        Avoid common or overused quotes. Make it fresh and impactful. 
         
         STRICT OUTPUT FORMAT (JSON ONLY):
         {

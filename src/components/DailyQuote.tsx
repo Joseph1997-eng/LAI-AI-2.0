@@ -8,6 +8,7 @@ import { saveAs } from "file-saver";
 import Image from "next/image";
 import { generateDailyQuote } from "@/lib/gemini";
 import { cn } from "@/lib/utils";
+import confetti from "canvas-confetti";
 
 interface DailyQuoteProps {
     isOpen: boolean;
@@ -67,6 +68,33 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
 
         loadQuote();
     }, [isOpen]);
+
+    // Celebration effect when quote is loaded or changed
+    useEffect(() => {
+        if (isOpen && !isLoading && !error && quote) {
+            const duration = 3 * 1000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 60 };
+
+            const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+            const interval: any = setInterval(function () {
+                const timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                const particleCount = 50 * (timeLeft / duration);
+
+                // since particles fall down, start a bit higher than random
+                confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+                confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+            }, 250);
+
+            return () => clearInterval(interval);
+        }
+    }, [isOpen, isLoading, error, quote]);
 
     const handleShuffle = async () => {
         setIsShuffling(true);
@@ -219,8 +247,8 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
 
                         {/* Logo */}
                         <div className="flex justify-center mb-6 relative z-10">
-                            <div className="w-24 h-24 rounded-xl overflow-hidden border-2 border-primary/20 shadow-lg bg-white/10 backdrop-blur-md p-2">
-                                <div className="relative w-full h-full rounded-lg overflow-hidden">
+                            <div className="w-24 h-24 rounded-lg overflow-hidden border-2 border-primary/20 shadow-lg bg-white/10 backdrop-blur-md p-2">
+                                <div className="relative w-full h-full rounded-md overflow-hidden">
                                     <Image
                                         src="/LAI AI.png"
                                         alt="LAI AI"
