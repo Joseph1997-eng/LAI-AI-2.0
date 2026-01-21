@@ -157,10 +157,39 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
             });
 
             if (!blob) throw new Error("Failed to generate image blob");
-            saveAs(blob, `lai-ai-quote-${quote.id}.png`);
+
+            // Try explicit file conservation first
+            try {
+                saveAs(blob, `lai-ai-quote-${quote.id}.png`);
+            } catch (saveError) {
+                console.warn("FileSaver failed, trying fallback...", saveError);
+                // Fallback: Create Object URL and open in new tab for manual save
+                const url = URL.createObjectURL(blob);
+                window.open(url, '_blank');
+                // Clean up URL object after a delay
+                setTimeout(() => URL.revokeObjectURL(url), 60000);
+            }
+
         } catch (err) {
             console.error('Error saving image:', err);
-            alert("Could not save image. Please try again.");
+
+            // Final fallback if everything fails: alert user
+            if (window.confirm("Automatic save failed. Do you want to try opening the image to save manually?")) {
+                try {
+                    const blob = await toBlob(quoteRef.current!, {
+                        cacheBust: true,
+                        backgroundColor: '#09090b',
+                        style: { fontFamily: 'Inter, sans-serif' }
+                    });
+                    if (blob) {
+                        const url = URL.createObjectURL(blob);
+                        window.open(url, '_blank');
+                        setTimeout(() => URL.revokeObjectURL(url), 60000);
+                    }
+                } catch (retryErr) {
+                    alert("Could not generate image. Please try again.");
+                }
+            }
         } finally {
             setIsSharing(false);
         }

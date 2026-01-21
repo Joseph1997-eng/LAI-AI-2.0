@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { getConversations, type Conversation, deleteConversation, updateConversationTitle, searchConversations } from "@/lib/db/conversations";
 import { createClient } from "@/utils/supabase/client";
+import { useSettings } from "@/context/SettingsContext";
 
 interface SidebarProps {
     isOpen: boolean;
@@ -41,6 +42,7 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [userEmail, setUserEmail] = useState<string | null>(null);
     const [userAvatar, setUserAvatar] = useState<string | null>(null);
+    const { showQuoteTicker, setShowQuoteTicker } = useSettings();
 
     // Chat management state
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -335,6 +337,27 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
                                     <User className="w-5 h-5" />
                                     <span>Profile</span>
                                 </Link>
+
+                                <button
+                                    onClick={() => setShowQuoteTicker(!showQuoteTicker)}
+                                    className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-white/5 text-sm text-foreground group"
+                                    title={showQuoteTicker ? "Hide Ticker" : "Show Ticker"}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <Sparkles className={cn("w-5 h-5 transition-colors", showQuoteTicker ? "text-purple-500" : "text-muted-foreground")} />
+                                        <span>Daily Ticker</span>
+                                    </div>
+                                    <div className={cn(
+                                        "w-8 h-4 rounded-full transition-colors relative",
+                                        showQuoteTicker ? "bg-purple-500" : "bg-white/20"
+                                    )}>
+                                        <div className={cn(
+                                            "absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white transition-transform duration-200",
+                                            showQuoteTicker ? "translate-x-4" : "translate-x-0"
+                                        )} />
+                                    </div>
+                                </button>
+
                                 <button onClick={() => setShowDailyQuote(true)} className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 text-sm text-foreground">
                                     <Sparkles className="w-5 h-5 text-yellow-500" />
                                     <span>Daily Wisdom</span>
