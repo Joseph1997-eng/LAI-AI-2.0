@@ -124,3 +124,31 @@ export function getApiKeyStatus(): string {
    }
    return `API Key: SET (${apiKey.substring(0, 10)}...)`;
 }
+
+export async function generateDailyQuote(): Promise<{ text: string; translation: string; author: string } | null> {
+   if (!model) return null;
+
+   try {
+      const prompt = `Generate a short, inspiring, and positive quote in English and translate it to Lai Hakha (Chin). 
+        
+        STRICT OUTPUT FORMAT (JSON ONLY):
+        {
+            "text": "English quote here",
+            "translation": "Lai Hakha translation here",
+            "author": "Author Name"
+        }
+        
+        Ensure the translation uses deep, respectful Lai Hakha vocabulary as per your system instructions.`;
+
+      const result = await model.generateContent(prompt);
+      const response = result.response;
+      const text = response.text();
+
+      // Clean up markdown code blocks if present
+      const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
+      return JSON.parse(jsonStr);
+   } catch (error) {
+      console.error("Error generating quote:", error);
+      return null;
+   }
+}
