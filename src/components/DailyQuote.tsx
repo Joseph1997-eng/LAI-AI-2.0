@@ -14,26 +14,73 @@ interface DailyQuoteProps {
     onClose: () => void;
 }
 
+const STORAGE_KEY = 'lai_ai_daily_quote_v1';
+
 export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
     const [quote, setQuote] = useState<Quote | null>(null);
     const quoteRef = useRef<HTMLDivElement>(null);
     const [isSharing, setIsSharing] = useState(false);
     const [isShuffling, setIsShuffling] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        setQuote(getDailyQuote());
-    }, []);
+        if (!isOpen) return;
+
+        const loadQuote = async () => {
+            setIsLoading(true);
+            try {
+                // Check local storage
+                const today = new Date().toISOString().split('T')[0];
+                const stored = localStorage.getItem(STORAGE_KEY);
+
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (parsed.date === today && parsed.quote) {
+                        setQuote(parsed.quote);
+                        setIsLoading(false);
+                        return;
+                    }
+                }
+
+                // If no quote for today, generate one
+                const newQuote = await generateDailyQuote();
+                if (newQuote) {
+                    const quoteWithId = { ...newQuote, id: Date.now() };
+                    setQuote(quoteWithId);
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                        date: today,
+                        quote: quoteWithId
+                    }));
+                } else {
+                    // Fallback to static list
+                    const fallback = getDailyQuote();
+                    setQuote(fallback);
+                }
+            } catch (error) {
+                console.error("Error loading quote:", error);
+                setQuote(getDailyQuote());
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadQuote();
+    }, [isOpen]);
 
     const handleShuffle = async () => {
         setIsShuffling(true);
         try {
             const newQuote = await generateDailyQuote();
             if (newQuote) {
-                // Generate a temporary ID for the new quote
-                setQuote({
-                    ...newQuote,
-                    id: Date.now()
-                });
+                const quoteWithId = { ...newQuote, id: Date.now() };
+                setQuote(quoteWithId);
+
+                // Update storage with new shuffled quote for today
+                const today = new Date().toISOString().split('T')[0];
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    date: today,
+                    quote: quoteWithId
+                }));
             }
         } catch (error) {
             console.error("Failed to shuffle quote:", error);
@@ -92,7 +139,7 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
         }
     };
 
-    if (!isOpen || !quote) return null;
+    if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
@@ -106,10 +153,10 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
                     <div className="flex items-center gap-2">
                         <button
                             onClick={handleShuffle}
-                            disabled={isShuffling}
+                            disabled={isShuffling || isLoading}
                             className={cn(
                                 "p-2 rounded-full hover:bg-white/10 transition-colors text-white/70 hover:text-white",
-                                isShuffling && "animate-spin"
+                                (isShuffling || isLoading) && "animate-spin"
                             )}
                             title="Shuffle Quote"
                         >
@@ -123,13 +170,16 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
 
                 {/* Content to Capture */}
                 <div className="relative">
-                    {isShuffling && (
-                        <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#09090b]/50 backdrop-blur-[2px]">
-                            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                    {(isShuffling || isLoading) && (
+                        <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#09090b]/50 backdrop-blur-[2px] transition-all duration-300">
+                            <div className="flex flex-col items-center gap-3">
+                                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                                <p className="text-sm text-white/70 font-medium">Generating Wisdom...</p>
+                            </div>
                         </div>
                     )}
 
-                    <div ref={quoteRef} className="p-8 bg-[#09090b] text-center space-y-6 relative overflow-hidden">
+                    <div ref={quoteRef} className="p-8 bg-[#09090b] text-center space-y-6 relative overflow-hidden min-h-[400px] flex flex-col justify-center">
                         {/* Decorative Background Elements */}
                         <div className="absolute top-0 left-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
                         <div className="absolute bottom-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
@@ -147,23 +197,31 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
                             </div>
                         </div>
 
-                        <div className="space-y-4 relative z-10">
-                            <blockquote className="text-xl md:text-2xl font-serif italic text-white leading-relaxed">
-                                &quot;{quote.text}&quot;
-                            </blockquote>
+                        {quote ? (
+                            <>
+                                <div className="space-y-4 relative z-10 animate-in fade-in zoom-in duration-500">
+                                    <blockquote className="text-xl md:text-2xl font-serif italic text-white leading-relaxed">
+                                        &quot;{quote.text}&quot;
+                                    </blockquote>
 
-                            <div className="w-16 h-0.5 bg-primary/30 mx-auto rounded-full" />
+                                    <div className="w-16 h-0.5 bg-primary/30 mx-auto rounded-full" />
 
-                            <p className="text-lg text-white/90 font-medium leading-relaxed">
-                                {quote.translation}
-                            </p>
-                        </div>
+                                    <p className="text-lg text-white/90 font-medium leading-relaxed">
+                                        {quote.translation}
+                                    </p>
+                                </div>
 
-                        <div className="pt-4 relative z-10">
-                            <p className="text-sm text-primary font-semibold tracking-wider uppercase">
-                                — {quote.author}
-                            </p>
-                        </div>
+                                <div className="pt-4 relative z-10 animate-in slide-in-from-bottom-2 duration-700 delay-100">
+                                    <p className="text-sm text-primary font-semibold tracking-wider uppercase">
+                                        — {quote.author}
+                                    </p>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="relative z-10 text-white/50 animate-pulse">
+                                <p>Finding inspiration...</p>
+                            </div>
+                        )}
 
                         {/* Footer Branding */}
                         <div className="pt-8 flex flex-col items-center gap-1 opacity-60">
@@ -184,8 +242,8 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
                 <div className="p-4 border-t border-white/10 flex gap-3">
                     <button
                         onClick={handleShare}
-                        disabled={isSharing || isShuffling}
-                        className="flex-1 flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground py-3 rounded-xl font-medium transition-all active:scale-[0.98]"
+                        disabled={isSharing || isShuffling || isLoading || !quote}
+                        className="flex-1 flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground py-3 rounded-xl font-medium transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isSharing ? (
                             <>

@@ -1,7 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+
 // Fallback to dummy key during build/dev if not set to prevent top-level crash
-const apiKey = process.env.GOOGLE_API_KEY || "missing-api-key";
+const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_API_KEY || process.env.GOOGLE_API_KEY || "missing-api-key";
 
 // Warn in development if API key is missing
 if (apiKey === "missing-api-key" && process.env.NODE_ENV === "development") {
