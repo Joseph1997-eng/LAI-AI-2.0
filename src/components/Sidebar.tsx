@@ -17,8 +17,10 @@ import {
     X,
     Menu,
     Search,
-    Loader2
+    Loader2,
+    Sparkles
 } from "lucide-react";
+import DailyQuote from "@/components/DailyQuote";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { getConversations, type Conversation, deleteConversation, updateConversationTitle, searchConversations } from "@/lib/db/conversations";
@@ -35,6 +37,7 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
     const [mounted, setMounted] = useState(false);
     const [isDark, setIsDark] = useState(false);
     const [showAbout, setShowAbout] = useState(false);
+    const [showDailyQuote, setShowDailyQuote] = useState(false);
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [userEmail, setUserEmail] = useState<string | null>(null);
     const [userAvatar, setUserAvatar] = useState<string | null>(null);
@@ -332,6 +335,10 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
                                     <User className="w-5 h-5" />
                                     <span>Profile</span>
                                 </Link>
+                                <button onClick={() => setShowDailyQuote(true)} className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 text-sm text-foreground">
+                                    <Sparkles className="w-5 h-5 text-yellow-500" />
+                                    <span>Daily Wisdom</span>
+                                </button>
                                 <button onClick={() => setShowAbout(true)} className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 text-sm text-foreground">
                                     <Info className="w-5 h-5" />
                                     <span>About LAI AI</span>
@@ -451,6 +458,10 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
                             <User className="w-5 h-5" />
                             <span>Profile</span>
                         </Link>
+                        <button onClick={() => setShowDailyQuote(true)} className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-sm text-foreground">
+                            <Sparkles className="w-5 h-5 text-yellow-500" />
+                            <span>Daily Wisdom</span>
+                        </button>
                         <button onClick={() => setShowAbout(true)} className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-sm text-foreground">
                             <Info className="w-5 h-5" />
                             <span>About LAI AI</span>
@@ -544,6 +555,8 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
                     </div>
                 )
             }
+            {/* Daily Quote Dialog */}
+            <DailyQuote isOpen={showDailyQuote} onClose={() => setShowDailyQuote(false)} />
         </>
     );
 }
