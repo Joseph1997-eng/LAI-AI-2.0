@@ -116,8 +116,7 @@ Analyze user input through these lenses:
 **Response:** "Keimah cu **Chin (Lai) ca le holh lei a thuk mi hngalhnak** in ser ka si. Ka rian cu nangmah bawmh le thazang pek hi a si 📘."`;
 
 export const model = genAI.getGenerativeModel({
-   // DO NOT CHANGE: gemini-1.5-flash is the stable model. 2.5 does not exist yet.
-   model: "gemini-1.5-flash",
+   model: "gemini-2.5-flash",
    generationConfig: {
       temperature: 0.9,
    },
