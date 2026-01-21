@@ -295,8 +295,8 @@ export default function ChatPage() {
                     // API Key Issue
                     setError("API Key he pehtlai in buainak a um. Zangfah tein Administrator chawn hna.");
                 } else {
-                    // General Error
-                    setError("Technical error tlawmpal a um. Zaangfah tein tuah ṭhan.");
+                    // General Error - Show the specific message for debugging
+                    setError(`Technical error: ${error.message} (Zangfah tein tuah ṭhan)`);
                 }
             } else {
                 setError("Technical error tlawmpal a um. Zaangfah tein tuah ṭhan.");
