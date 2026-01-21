@@ -22,6 +22,7 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
     const [isSharing, setIsSharing] = useState(false);
     const [isShuffling, setIsShuffling] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -69,6 +70,7 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
 
     const handleShuffle = async () => {
         setIsShuffling(true);
+        setError(null);
         try {
             const newQuote = await generateDailyQuote();
             if (newQuote) {
@@ -81,9 +83,12 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
                     date: today,
                     quote: quoteWithId
                 }));
+            } else {
+                setError("Failed to generate quote. Please check your connection or try again.");
             }
         } catch (error) {
             console.error("Failed to shuffle quote:", error);
+            setError("An error occurred while generating. Please try again.");
         } finally {
             setIsShuffling(false);
         }
@@ -201,6 +206,12 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
                         </div>
                     )}
 
+                    {error && (
+                        <div className="absolute top-4 left-4 right-4 z-20 bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-red-200 text-sm text-center">
+                            {error}
+                        </div>
+                    )}
+
                     <div ref={quoteRef} className="p-8 bg-[#09090b] text-center space-y-6 relative overflow-hidden min-h-[400px] flex flex-col justify-center">
                         {/* Decorative Background Elements */}
                         <div className="absolute top-0 left-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
@@ -208,13 +219,13 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
 
                         {/* Logo */}
                         <div className="flex justify-center mb-6 relative z-10">
-                            <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-primary/20 shadow-lg bg-white/10 backdrop-blur-md p-1">
-                                <div className="relative w-full h-full rounded-full overflow-hidden bg-black">
+                            <div className="w-24 h-24 rounded-xl overflow-hidden border-2 border-primary/20 shadow-lg bg-white/10 backdrop-blur-md p-2">
+                                <div className="relative w-full h-full rounded-lg overflow-hidden">
                                     <Image
                                         src="/LAI AI.png"
                                         alt="LAI AI"
                                         fill
-                                        className="object-cover"
+                                        className="object-contain"
                                     />
                                 </div>
                             </div>
