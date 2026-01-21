@@ -171,18 +171,18 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
             >
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b border-white/10">
-                    <h3 className="font-semibold text-lg text-white">Daily Wisdom / Nifatin Mifim Bia</h3>
+                    <h3 className="font-semibold text-lg text-white">Daily Wisdom</h3>
                     <div className="flex items-center gap-2">
                         <button
                             onClick={handleShuffle}
                             disabled={isShuffling || isLoading}
                             className={cn(
-                                "p-2 rounded-full hover:bg-white/10 transition-colors text-white/70 hover:text-white",
-                                (isShuffling || isLoading) && "animate-spin"
+                                "flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white/90 text-sm font-medium",
+                                (isShuffling || isLoading) && "opacity-50 cursor-not-allowed"
                             )}
-                            title="Shuffle Quote"
                         >
-                            <RefreshCw className="w-5 h-5" />
+                            <RefreshCw className={cn("w-4 h-4", (isShuffling || isLoading) && "animate-spin")} />
+                            <span>Generate</span>
                         </button>
                         <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 transition-colors text-white/70 hover:text-white">
                             <X className="w-5 h-5" />
@@ -208,14 +208,15 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
 
                         {/* Logo */}
                         <div className="flex justify-center mb-6 relative z-10">
-                            <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-primary/20 shadow-lg bg-white/10 backdrop-blur-md">
-                                <Image
-                                    src="/joseph.jpg"
-                                    alt="LAI AI"
-                                    width={64}
-                                    height={64}
-                                    className="object-cover"
-                                />
+                            <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-primary/20 shadow-lg bg-white/10 backdrop-blur-md p-1">
+                                <div className="relative w-full h-full rounded-full overflow-hidden bg-black">
+                                    <Image
+                                        src="/LAI AI.png"
+                                        alt="LAI AI"
+                                        fill
+                                        className="object-cover"
+                                    />
+                                </div>
                             </div>
                         </div>
 
