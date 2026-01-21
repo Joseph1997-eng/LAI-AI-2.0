@@ -15,7 +15,8 @@ import {
     Edit2,
     Check,
     X,
-    Menu
+    Menu,
+    Search
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -40,6 +41,7 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
     // Chat management state
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editTitle, setEditTitle] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
 
     // Handle mounting
     useEffect(() => {
@@ -111,6 +113,11 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
         };
         loadUser();
     }, [mounted]);
+
+    // Filter conversations based on search query
+    const filteredConversations = conversations.filter(convo =>
+        convo.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     const toggleSidebar = () => {
         onSidebarToggle(!isOpen);
@@ -209,44 +216,61 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
                     {/* Middle: Chat History (when expanded) */}
                     {isOpen && (
                         <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                            {/* Search Input */}
+                            <div className="relative mb-3">
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder="Search chats..."
+                                    className="w-full pl-10 pr-3 py-2 bg-muted/50 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                                />
+                            </div>
                             <h3 className="text-xs font-semibold text-muted-foreground uppercase px-2 mb-2">Recent Chats</h3>
                             <div className="space-y-1">
-                                {conversations.map((convo) => (
-                                    <div key={convo.id} className="group relative flex items-center rounded-lg hover:bg-muted/50">
-                                        <button onClick={() => handleConversationClick(convo.id)} className="flex-1 p-3 flex items-center gap-2 text-sm text-left min-w-0">
-                                            <MessageSquare className="w-4 h-4 flex-shrink-0 text-foreground" />
-                                            {editingId === convo.id ? (
-                                                <input
-                                                    type="text"
-                                                    value={editTitle}
-                                                    onChange={(e) => setEditTitle(e.target.value)}
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    className="flex-1 bg-transparent border-b border-primary focus:outline-none text-foreground"
-                                                    autoFocus
-                                                />
-                                            ) : (
-                                                <span className="truncate text-foreground">{convo.title}</span>
-                                            )}
-                                        </button>
-                                        <div className="flex items-center pr-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            {editingId === convo.id ? (
-                                                <>
-                                                    <button onClick={saveTitle} className="p-1 hover:text-green-500"><Check className="w-4 h-4" /></button>
-                                                    <button onClick={cancelEditing} className="p-1 hover:text-red-500"><X className="w-4 h-4" /></button>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <button onClick={(e) => startEditing(e, convo)} className="p-1.5 text-muted-foreground hover:text-foreground rounded-md hover:bg-white/10" title="Rename">
-                                                        <Edit2 className="w-3.5 h-3.5" />
-                                                    </button>
-                                                    <button onClick={(e) => deleteChat(e, convo.id)} className="p-1.5 text-muted-foreground hover:text-red-500 rounded-md hover:bg-white/10" title="Delete">
-                                                        <Trash2 className="w-3.5 h-3.5" />
-                                                    </button>
-                                                </>
-                                            )}
+                                {filteredConversations.length > 0 ? (
+                                    filteredConversations.map((convo) => (
+                                        <div key={convo.id} className="group relative flex items-center rounded-lg hover:bg-muted/50">
+                                            <button onClick={() => handleConversationClick(convo.id)} className="flex-1 p-3 flex items-center gap-2 text-sm text-left min-w-0">
+                                                <MessageSquare className="w-4 h-4 flex-shrink-0 text-foreground" />
+                                                {editingId === convo.id ? (
+                                                    <input
+                                                        type="text"
+                                                        value={editTitle}
+                                                        onChange={(e) => setEditTitle(e.target.value)}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        className="flex-1 bg-transparent border-b border-primary focus:outline-none text-foreground"
+                                                        autoFocus
+                                                    />
+                                                ) : (
+                                                    <span className="truncate text-foreground">{convo.title}</span>
+                                                )}
+                                            </button>
+                                            <div className="flex items-center pr-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                {editingId === convo.id ? (
+                                                    <>
+                                                        <button onClick={saveTitle} className="p-1 hover:text-green-500"><Check className="w-4 h-4" /></button>
+                                                        <button onClick={cancelEditing} className="p-1 hover:text-red-500"><X className="w-4 h-4" /></button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <button onClick={(e) => startEditing(e, convo)} className="p-1.5 text-muted-foreground hover:text-foreground rounded-md hover:bg-white/10" title="Rename">
+                                                            <Edit2 className="w-3.5 h-3.5" />
+                                                        </button>
+                                                        <button onClick={(e) => deleteChat(e, convo.id)} className="p-1.5 text-muted-foreground hover:text-red-500 rounded-md hover:bg-white/10" title="Delete">
+                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </div>
                                         </div>
+                                    ))
+                                ) : (
+                                    <div className="text-center py-8 text-muted-foreground text-sm">
+                                        No chats found
                                     </div>
-                                ))}
+                                )}
                             </div>
                         </div>
                     )}
@@ -332,33 +356,50 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
 
                     {/* Scrollable Middle: Recent Chats */}
                     <div className="flex-1 overflow-y-auto px-4 min-h-0">
+                        {/* Search Input */}
+                        <div className="relative mb-3 sticky top-0 bg-background pt-2 pb-1 z-10">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search chats..."
+                                className="w-full pl-10 pr-3 py-2 bg-muted/50 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                            />
+                        </div>
                         <h3 className="text-xs font-semibold text-muted-foreground uppercase px-2 mb-2 sticky top-0 bg-background py-2">Recent Chats</h3>
                         <div className="space-y-1 pb-4">
-                            {conversations.map((convo) => (
-                                <div key={convo.id} className="group flex items-center rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-                                    <button onClick={() => handleConversationClick(convo.id)} className="flex-1 p-3 flex items-center gap-2 text-sm text-left">
-                                        <MessageSquare className="w-4 h-4 text-foreground flex-shrink-0" />
-                                        {editingId === convo.id ? (
-                                            <input type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} onClick={(e) => e.stopPropagation()} className="flex-1 bg-transparent border-b border-primary focus:outline-none text-foreground" autoFocus />
-                                        ) : (
-                                            <span className="truncate text-foreground">{convo.title}</span>
-                                        )}
-                                    </button>
-                                    <div className="flex items-center pr-2">
-                                        {editingId === convo.id ? (
-                                            <>
-                                                <button onClick={saveTitle} className="p-1 hover:text-green-500"><Check className="w-4 h-4" /></button>
-                                                <button onClick={cancelEditing} className="p-1 hover:text-red-500"><X className="w-4 h-4" /></button>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <button onClick={(e) => startEditing(e, convo)} className="p-1.5 text-muted-foreground hover:text-foreground" title="Rename"><Edit2 className="w-3.5 h-3.5" /></button>
-                                                <button onClick={(e) => deleteChat(e, convo.id)} className="p-1.5 text-muted-foreground hover:text-red-500" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
-                                            </>
-                                        )}
+                            {filteredConversations.length > 0 ? (
+                                filteredConversations.map((convo) => (
+                                    <div key={convo.id} className="group flex items-center rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                                        <button onClick={() => handleConversationClick(convo.id)} className="flex-1 p-3 flex items-center gap-2 text-sm text-left">
+                                            <MessageSquare className="w-4 h-4 text-foreground flex-shrink-0" />
+                                            {editingId === convo.id ? (
+                                                <input type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} onClick={(e) => e.stopPropagation()} className="flex-1 bg-transparent border-b border-primary focus:outline-none text-foreground" autoFocus />
+                                            ) : (
+                                                <span className="truncate text-foreground">{convo.title}</span>
+                                            )}
+                                        </button>
+                                        <div className="flex items-center pr-2">
+                                            {editingId === convo.id ? (
+                                                <>
+                                                    <button onClick={saveTitle} className="p-1 hover:text-green-500"><Check className="w-4 h-4" /></button>
+                                                    <button onClick={cancelEditing} className="p-1 hover:text-red-500"><X className="w-4 h-4" /></button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <button onClick={(e) => startEditing(e, convo)} className="p-1.5 text-muted-foreground hover:text-foreground" title="Rename"><Edit2 className="w-3.5 h-3.5" /></button>
+                                                    <button onClick={(e) => deleteChat(e, convo.id)} className="p-1.5 text-muted-foreground hover:text-red-500" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
+                                ))
+                            ) : (
+                                <div className="text-center py-8 text-muted-foreground text-sm">
+                                    No chats found
                                 </div>
-                            ))}
+                            )}
                         </div>
                     </div>
 
@@ -407,68 +448,70 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
                         </div>
                     </div>
                 </div>
-            </aside>
+            </aside >
 
             {/* About LAI AI Dialog */}
-            {showAbout && (
-                <div
-                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-                    onClick={() => setShowAbout(false)}
-                >
+            {
+                showAbout && (
                     <div
-                        className="glass-card p-6 rounded-2xl max-w-md w-full space-y-4"
-                        onClick={(e) => e.stopPropagation()}
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        onClick={() => setShowAbout(false)}
                     >
-                        <h2 className="text-2xl font-bold flex items-center gap-2 text-foreground">
-                            <Info className="w-6 h-6 text-primary" />
-                            About LAI AI
-                        </h2>
-
-                        <div className="space-y-3">
-                            <p className="text-sm leading-relaxed text-foreground">
-                                <strong className="text-primary">LAI AI</strong> (Leoliver&apos;s Assistant Intelligence) is a culturally-aware AI chatbot
-                                designed to serve the <strong>Lai Hakha-speaking community</strong> with warmth, wisdom, and care.
-                            </p>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                                Built with cutting-edge technology (Next.js, Google Gemini Vision API), LAI AI preserves and celebrates
-                                <strong> Lai language and culture</strong> while providing modern AI assistance.
-                            </p>
-                        </div>
-
-                        <div className="space-y-3 border-t border-black/10 dark:border-white/10 pt-4">
-                            <p className="text-sm leading-relaxed text-foreground">
-                                <strong className="text-primary">LAI AI</strong> (Leoliver&apos;s Assistant Intelligence) cu Lai Hakha holh hman mi
-                                zatlangbu caah <strong>lungthin a thiang, mifim, le dawtmi</strong> tein biaruahnak a pe mi AI chatbot a si.
-                            </p>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                                Technology thar (Next.js, Google Gemini Vision API) hmang in <strong>Lai holh le nunphung</strong> kan humhim le kan upat.
-                                Vawleicung Lai holh hman mi kip caah AI technology kan pe.
-                            </p>
-                        </div>
-
-                        <div className="bg-primary/10 rounded-lg p-3 space-y-2">
-                            <p className="text-xs font-semibold text-primary">Core Values / Tum Duhnak Ṭha Bik:</p>
-                            <div className="grid grid-cols-2 gap-2 text-xs text-foreground">
-                                <div>♡ Siaherhnak (Deep Love)</div>
-                                <div>♡ Mifimnak (Wisdom)</div>
-                                <div>♡ Hawikomnak (Friendship)</div>
-                                <div>♡ Dawtnak (Care)</div>
-                            </div>
-                        </div>
-
-                        <p className="text-xs text-center text-muted-foreground italic">
-                            Built with ♡ for the Lai community by Joseph (Leoliver)
-                        </p>
-
-                        <button
-                            onClick={() => setShowAbout(false)}
-                            className="w-full p-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                        <div
+                            className="glass-card p-6 rounded-2xl max-w-md w-full space-y-4"
+                            onClick={(e) => e.stopPropagation()}
                         >
-                            Close / Khar
-                        </button>
+                            <h2 className="text-2xl font-bold flex items-center gap-2 text-foreground">
+                                <Info className="w-6 h-6 text-primary" />
+                                About LAI AI
+                            </h2>
+
+                            <div className="space-y-3">
+                                <p className="text-sm leading-relaxed text-foreground">
+                                    <strong className="text-primary">LAI AI</strong> (Leoliver&apos;s Assistant Intelligence) is a culturally-aware AI chatbot
+                                    designed to serve the <strong>Lai Hakha-speaking community</strong> with warmth, wisdom, and care.
+                                </p>
+                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                    Built with cutting-edge technology (Next.js, Google Gemini Vision API), LAI AI preserves and celebrates
+                                    <strong> Lai language and culture</strong> while providing modern AI assistance.
+                                </p>
+                            </div>
+
+                            <div className="space-y-3 border-t border-black/10 dark:border-white/10 pt-4">
+                                <p className="text-sm leading-relaxed text-foreground">
+                                    <strong className="text-primary">LAI AI</strong> (Leoliver&apos;s Assistant Intelligence) cu Lai Hakha holh hman mi
+                                    zatlangbu caah <strong>lungthin a thiang, mifim, le dawtmi</strong> tein biaruahnak a pe mi AI chatbot a si.
+                                </p>
+                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                    Technology thar (Next.js, Google Gemini Vision API) hmang in <strong>Lai holh le nunphung</strong> kan humhim le kan upat.
+                                    Vawleicung Lai holh hman mi kip caah AI technology kan pe.
+                                </p>
+                            </div>
+
+                            <div className="bg-primary/10 rounded-lg p-3 space-y-2">
+                                <p className="text-xs font-semibold text-primary">Core Values / Tum Duhnak Ṭha Bik:</p>
+                                <div className="grid grid-cols-2 gap-2 text-xs text-foreground">
+                                    <div>♡ Siaherhnak (Deep Love)</div>
+                                    <div>♡ Mifimnak (Wisdom)</div>
+                                    <div>♡ Hawikomnak (Friendship)</div>
+                                    <div>♡ Dawtnak (Care)</div>
+                                </div>
+                            </div>
+
+                            <p className="text-xs text-center text-muted-foreground italic">
+                                Built with ♡ for the Lai community by Joseph (Leoliver)
+                            </p>
+
+                            <button
+                                onClick={() => setShowAbout(false)}
+                                className="w-full p-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                            >
+                                Close / Khar
+                            </button>
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
         </>
     );
 }
