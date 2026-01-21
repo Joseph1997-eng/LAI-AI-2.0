@@ -16,11 +16,12 @@ import {
     Check,
     X,
     Menu,
-    Search
+    Search,
+    Loader2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { getConversations, type Conversation, deleteConversation, updateConversationTitle } from "@/lib/db/conversations";
+import { getConversations, type Conversation, deleteConversation, updateConversationTitle, searchConversations } from "@/lib/db/conversations";
 import { createClient } from "@/utils/supabase/client";
 
 interface SidebarProps {
@@ -42,6 +43,8 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editTitle, setEditTitle] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
+    const [isSearching, setIsSearching] = useState(false);
+    const [searchResults, setSearchResults] = useState<Conversation[] | null>(null);
 
     // Handle mounting
     useEffect(() => {
@@ -114,10 +117,33 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
         loadUser();
     }, [mounted]);
 
-    // Filter conversations based on search query
-    const filteredConversations = conversations.filter(convo =>
-        convo.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // Handle search with debounce
+    useEffect(() => {
+        if (!mounted) return;
+
+        const timer = setTimeout(async () => {
+            if (searchQuery.trim()) {
+                setIsSearching(true);
+                try {
+                    const results = await searchConversations(searchQuery);
+                    setSearchResults(results);
+                } catch (error) {
+                    console.error("Search failed:", error);
+                } finally {
+                    setIsSearching(false);
+                }
+            } else {
+                setSearchResults(null);
+            }
+        }, 500); // 500ms debounce
+
+        return () => clearTimeout(timer);
+    }, [searchQuery, mounted]);
+
+    // Display conversations: either search results or default list
+    const displayedConversations = searchResults !== null ? searchResults : conversations;
+
+
 
     const toggleSidebar = () => {
         onSidebarToggle(!isOpen);
@@ -219,6 +245,9 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
                             {/* Search Input */}
                             <div className="relative mb-3">
                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                {isSearching && (
+                                    <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-3 h-3 text-muted-foreground animate-spin" />
+                                )}
                                 <input
                                     type="text"
                                     value={searchQuery}
@@ -229,8 +258,8 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
                             </div>
                             <h3 className="text-xs font-semibold text-muted-foreground uppercase px-2 mb-2">Recent Chats</h3>
                             <div className="space-y-1">
-                                {filteredConversations.length > 0 ? (
-                                    filteredConversations.map((convo) => (
+                                {displayedConversations.length > 0 ? (
+                                    displayedConversations.map((convo) => (
                                         <div key={convo.id} className="group relative flex items-center rounded-lg hover:bg-muted/50">
                                             <button onClick={() => handleConversationClick(convo.id)} className="flex-1 p-3 flex items-center gap-2 text-sm text-left min-w-0">
                                                 <MessageSquare className="w-4 h-4 flex-shrink-0 text-foreground" />
@@ -359,6 +388,9 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
                         {/* Search Input */}
                         <div className="relative mb-3 sticky top-0 bg-background pt-2 pb-1 z-10">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            {isSearching && (
+                                <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-3 h-3 text-muted-foreground animate-spin" />
+                            )}
                             <input
                                 type="text"
                                 value={searchQuery}
@@ -369,8 +401,8 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
                         </div>
                         <h3 className="text-xs font-semibold text-muted-foreground uppercase px-2 mb-2 sticky top-0 bg-background py-2">Recent Chats</h3>
                         <div className="space-y-1 pb-4">
-                            {filteredConversations.length > 0 ? (
-                                filteredConversations.map((convo) => (
+                            {displayedConversations.length > 0 ? (
+                                displayedConversations.map((convo) => (
                                     <div key={convo.id} className="group flex items-center rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                                         <button onClick={() => handleConversationClick(convo.id)} className="flex-1 p-3 flex items-center gap-2 text-sm text-left">
                                             <MessageSquare className="w-4 h-4 text-foreground flex-shrink-0" />

@@ -149,3 +149,61 @@ export async function updateMessage(
 
     return true;
 }
+
+export async function searchConversations(query: string): Promise<Conversation[]> {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+
+    // Search 1: Match title
+    const { data: titleMatches, error: titleError } = await supabase
+        .from("conversations")
+        .select("*")
+        .eq("user_id", user.id)
+        .ilike("title", `%${query}%`);
+
+    if (titleError) {
+        console.error("Error searching titles:", titleError);
+    }
+
+    // Search 2: Match message content
+    // First get messages that match
+    const { data: messageMatches, error: messageError } = await supabase
+        .from("messages")
+        .select("conversation_id")
+        .ilike("content", `%${query}%`);
+
+    if (messageError) {
+        console.error("Error searching messages:", messageError);
+    }
+
+    // Extract unique conversation IDs from matching messages
+    const messageConversationIds = Array.from(new Set((messageMatches || []).map(m => m.conversation_id)));
+
+    // Fetch conversations for those messages if any (and if they belong to the user)
+    let contentMatches: Conversation[] = [];
+    if (messageConversationIds.length > 0) {
+        const { data: contentConvos, error: contentConvoError } = await supabase
+            .from("conversations")
+            .select("*")
+            .eq("user_id", user.id)
+            .in("id", messageConversationIds);
+
+        if (!contentConvoError && contentConvos) {
+            contentMatches = contentConvos;
+        }
+    }
+
+    // Combine results and remove duplicates
+    const allMatches = [...(titleMatches || []), ...contentMatches];
+    const uniqueMatchesMap = new Map<string, Conversation>();
+
+    allMatches.forEach(c => {
+        uniqueMatchesMap.set(c.id, c);
+    });
+
+    // Convert values to array and sort by updated_at desc
+    return Array.from(uniqueMatchesMap.values()).sort((a, b) =>
+        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+    );
+}
