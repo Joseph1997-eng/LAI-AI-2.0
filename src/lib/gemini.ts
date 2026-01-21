@@ -106,7 +106,7 @@ Analyze user input through these lenses:
 **Response:** "Keimah cu **Chin (Lai) ca le holh lei a thuk mi hngalhnak** in ser ka si. Ka rian cu nangmah bawmh le thazang pek hi a si 📘."`;
 
 export const model = genAI.getGenerativeModel({
-   model: "gemini-2.5-flash",
+   model: "gemini-1.5-flash",
    generationConfig: {
       temperature: 0.9,
    },
@@ -126,8 +126,8 @@ export function getApiKeyStatus(): string {
    return `API Key: SET (${apiKey.substring(0, 10)}...)`;
 }
 
-export async function generateDailyQuote(): Promise<{ text: string; translation: string; author: string } | null> {
-   if (!model) return null;
+export async function generateDailyQuote(): Promise<{ text: string; translation: string; author: string }> {
+   if (!model) throw new Error("AI Model not initialized. Please check your API key.");
 
    try {
       const prompt = `Generate a UNIQUE, short, inspiring, and positive quote in English and translate it to Lai Hakha (Chin). 
@@ -149,8 +149,8 @@ export async function generateDailyQuote(): Promise<{ text: string; translation:
       // Clean up markdown code blocks if present
       const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
       return JSON.parse(jsonStr);
-   } catch (error) {
+   } catch (error: any) {
       console.error("Error generating quote:", error);
-      return null;
+      throw new Error(error.message || "Failed to generate quote from AI service.");
    }
 }

@@ -45,18 +45,18 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
                 }
 
                 // If no quote for today, generate one
-                const newQuote = await generateDailyQuote();
-                if (newQuote) {
+                try {
+                    const newQuote = await generateDailyQuote();
                     const quoteWithId = { ...newQuote, id: Date.now() };
                     setQuote(quoteWithId);
                     localStorage.setItem(STORAGE_KEY, JSON.stringify({
                         date: today,
                         quote: quoteWithId
                     }));
-                } else {
-                    // Fallback to static list
-                    const fallback = getDailyQuote();
-                    setQuote(fallback);
+                } catch (err) {
+                    // Fallback to static list silently on init failure
+                    console.error("Init generation failed:", err);
+                    setQuote(getDailyQuote());
                 }
             } catch (error) {
                 console.error("Error loading quote:", error);
@@ -101,22 +101,18 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
         setError(null);
         try {
             const newQuote = await generateDailyQuote();
-            if (newQuote) {
-                const quoteWithId = { ...newQuote, id: Date.now() };
-                setQuote(quoteWithId);
+            const quoteWithId = { ...newQuote, id: Date.now() };
+            setQuote(quoteWithId);
 
-                // Update storage with new shuffled quote for today
-                const today = new Date().toISOString().split('T')[0];
-                localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                    date: today,
-                    quote: quoteWithId
-                }));
-            } else {
-                setError("Failed to generate quote. Please check your connection or try again.");
-            }
-        } catch (error) {
+            // Update storage with new shuffled quote for today
+            const today = new Date().toISOString().split('T')[0];
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                date: today,
+                quote: quoteWithId
+            }));
+        } catch (error: any) {
             console.error("Failed to shuffle quote:", error);
-            setError("An error occurred while generating. Please try again.");
+            setError(error.message || "An error occurred while generating. Please try again.");
         } finally {
             setIsShuffling(false);
         }
@@ -247,15 +243,13 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
 
                         {/* Logo */}
                         <div className="flex justify-center mb-6 relative z-10">
-                            <div className="w-24 h-24 rounded-lg overflow-hidden border-2 border-primary/20 shadow-lg bg-white/10 backdrop-blur-md p-2">
-                                <div className="relative w-full h-full rounded-md overflow-hidden">
-                                    <Image
-                                        src="/LAI AI.png"
-                                        alt="LAI AI"
-                                        fill
-                                        className="object-contain"
-                                    />
-                                </div>
+                            <div className="w-24 h-24 relative">
+                                <Image
+                                    src="/LAI AI.png"
+                                    alt="LAI AI"
+                                    fill
+                                    className="object-contain"
+                                />
                             </div>
                         </div>
 
