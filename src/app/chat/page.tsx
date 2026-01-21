@@ -152,16 +152,17 @@ export default function ChatPage() {
         await updateMessage(message.id, newContent);
     };
 
-    const sendMessage = async () => {
-        if ((!input.trim() && selectedFiles.length === 0) || loading) return;
+    const sendMessage = async (messageOverride?: string) => {
+        const textToSend = messageOverride || input;
+        if ((!textToSend.trim() && selectedFiles.length === 0) || loading) return;
 
         // Clear any previous errors
         setError(null);
 
-        let messageText = input;
+        let messageText = textToSend;
         if (selectedFiles.length > 0) {
             const fileNames = selectedFiles.map(f => f.name).join(", ");
-            messageText = `${input}\n\n[Attached files: ${fileNames}]`;
+            messageText = `${textToSend}\n\n[Attached files: ${fileNames}]`;
         }
 
         const userMessage: Message = { role: "user", parts: [{ text: messageText }] };
@@ -314,7 +315,9 @@ export default function ChatPage() {
                 onLoadConversation={handleLoadConversation}
                 onSidebarToggle={setSidebarOpen}
                 onExplainQuote={(text) => {
-                    setInput(`Explain more about this quote: "${text}"`);
+                    const explainPrompt = `Explain more about this quote: "${text}"`;
+                    // setInput(explainPrompt); // Optional: if we want to show it in input too, but usually we clear it
+                    sendMessage(explainPrompt);
                 }}
             />
 
@@ -482,7 +485,7 @@ export default function ChatPage() {
                                     disabled={loading}
                                 />
                                 <button
-                                    onClick={sendMessage}
+                                    onClick={() => sendMessage()}
                                     disabled={loading || (!input.trim() && selectedFiles.length === 0)}
                                     className="p-3 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 disabled:opacity-50 transition-all hover:scale-105 active:scale-95"
                                 >
