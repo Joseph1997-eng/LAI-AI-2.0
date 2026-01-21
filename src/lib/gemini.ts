@@ -4,6 +4,16 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 // Fallback to dummy key during build/dev if not set to prevent top-level crash
 const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_API_KEY || process.env.GOOGLE_API_KEY || "missing-api-key";
 
+// DEBUG: Log valid sources (masked) to help identify issues
+if (typeof window !== 'undefined') {
+   console.log("Gemini Config Debug:", {
+      NEXT_PUBLIC_GEMINI_API_KEY: process.env.NEXT_PUBLIC_GEMINI_API_KEY ? "Set" : "Missing",
+      NEXT_PUBLIC_GOOGLE_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_API_KEY ? "Set" : "Missing",
+      GOOGLE_API_KEY: process.env.GOOGLE_API_KEY ? "Set (May not work client-side)" : "Missing",
+      ActiveKey: apiKey !== "missing-api-key" ? `${apiKey.substring(0, 5)}...` : "Missing"
+   });
+}
+
 // Warn in development if API key is missing
 if (apiKey === "missing-api-key" && process.env.NODE_ENV === "development") {
    console.warn("⚠️  WARNING: GOOGLE_API_KEY is not set. AI features will not work.");
@@ -106,6 +116,7 @@ Analyze user input through these lenses:
 **Response:** "Keimah cu **Chin (Lai) ca le holh lei a thuk mi hngalhnak** in ser ka si. Ka rian cu nangmah bawmh le thazang pek hi a si 📘."`;
 
 export const model = genAI.getGenerativeModel({
+   // DO NOT CHANGE: gemini-1.5-flash is the stable model. 2.5 does not exist yet.
    model: "gemini-1.5-flash",
    generationConfig: {
       temperature: 0.9,

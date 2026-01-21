@@ -24,6 +24,27 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
     const [isShuffling, setIsShuffling] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [logoBase64, setLogoBase64] = useState<string>("/LAI AI.png");
+
+    // Convert logo to Base64 to prevent black image issues in export
+    useEffect(() => {
+        const convertToBase64 = async () => {
+            try {
+                const response = await fetch("/LAI AI.png");
+                const blob = await response.blob();
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    if (typeof reader.result === 'string') {
+                        setLogoBase64(reader.result);
+                    }
+                };
+                reader.readAsDataURL(blob);
+            } catch (e) {
+                console.error("Failed to load logo base64:", e);
+            }
+        };
+        convertToBase64();
+    }, []);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -188,13 +209,18 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
                     }
                 } catch (err) {
                     console.error('Error sharing:', err);
+                    // If user cancelled, do nothing. If error, try saving.
+                    if (err instanceof Error && err.name !== 'AbortError') {
+                        handleSaveImage();
+                    }
                 }
             } else {
-                alert("Sharing not supported on this device. Please use 'Save Image'.");
+                // Formatting fallback
+                handleSaveImage();
             }
         } catch (err) {
             console.error('Error sharing quote:', err);
-            alert("Could not share. Please try again.");
+            handleSaveImage();
         } finally {
             setIsSharing(false);
         }
@@ -254,11 +280,13 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
                         {/* Logo */}
                         <div className="flex justify-center mb-6 relative z-10">
                             <div className="w-24 h-24 relative">
+                                {/* Use Base64 source to ensure it captures correctly on mobile */}
                                 <Image
-                                    src="/LAI AI.png"
+                                    src={logoBase64}
                                     alt="LAI AI"
                                     fill
-                                    className="object-contain"
+                                    className="object-contain" // User requested raw image, no shapes
+                                    unoptimized // Bypass Next.js optimization to use data URL directly
                                 />
                             </div>
                         </div>
