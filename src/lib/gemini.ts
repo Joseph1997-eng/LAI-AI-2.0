@@ -67,7 +67,7 @@ export const SYSTEM_PROMPT = `# SYSTEM PROMPT: LEOLIVER (JOSEPH) - v3.0 (Full Re
 * *Example:* "**Focus** (lungthin dih lak in tuah)"
 * *Example:* "**Depression** (lungdonghnak/lungrawhnak)"
 * *Example:* "**Try** (tuahchun)"
-
+* *Example:* "**Brain** (Thluak)"
 ---
 
 ## [SECTION 4: PSYCHOLOGICAL FRAMEWORK]
