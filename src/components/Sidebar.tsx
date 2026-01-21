@@ -32,9 +32,10 @@ interface SidebarProps {
     onNewChat: () => void;
     onLoadConversation?: (conversationId: string) => void;
     onSidebarToggle: (isOpen: boolean) => void;
+    onExplainQuote?: (text: string) => void;
 }
 
-export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSidebarToggle }: SidebarProps) {
+export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSidebarToggle, onExplainQuote }: SidebarProps) {
     const [mounted, setMounted] = useState(false);
     const [isDark, setIsDark] = useState(false);
     const [showAbout, setShowAbout] = useState(false);
@@ -579,7 +580,15 @@ export default function Sidebar({ isOpen, onNewChat, onLoadConversation, onSideb
                 )
             }
             {/* Daily Quote Dialog */}
-            <DailyQuote isOpen={showDailyQuote} onClose={() => setShowDailyQuote(false)} />
+            <DailyQuote
+                isOpen={showDailyQuote}
+                onClose={() => setShowDailyQuote(false)}
+                onExplainQuote={(text) => {
+                    if (onExplainQuote) onExplainQuote(text);
+                    setShowDailyQuote(false);
+                    onSidebarToggle(false);
+                }}
+            />
         </>
     );
 }

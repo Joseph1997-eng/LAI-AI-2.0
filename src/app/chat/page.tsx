@@ -313,6 +313,9 @@ export default function ChatPage() {
                 onNewChat={handleNewChat}
                 onLoadConversation={handleLoadConversation}
                 onSidebarToggle={setSidebarOpen}
+                onExplainQuote={(text) => {
+                    setInput(`Explain more about this quote: "${text}"`);
+                }}
             />
 
             {/* Main Chat Area - responsive margin based on sidebar state */}

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Quote, getDailyQuote } from "@/lib/quotes";
-import { Download, Share2, X, RefreshCw, Loader2 } from "lucide-react";
+import { Download, Share2, X, RefreshCw, Loader2, MessageSquare } from "lucide-react";
 import { toBlob } from "html-to-image";
 import { saveAs } from "file-saver";
 import Image from "next/image";
@@ -13,11 +13,12 @@ import confetti from "canvas-confetti";
 interface DailyQuoteProps {
     isOpen: boolean;
     onClose: () => void;
+    onExplainQuote?: (text: string) => void;
 }
 
 const STORAGE_KEY = 'lai_ai_daily_quote_v1';
 
-export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
+export default function DailyQuote({ isOpen, onClose, onExplainQuote }: DailyQuoteProps) {
     const [quote, setQuote] = useState<Quote | null>(null);
     const quoteRef = useRef<HTMLDivElement>(null);
     const [isSharing, setIsSharing] = useState(false);
@@ -267,17 +268,6 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
                 <div className="flex items-center justify-between p-4 border-b border-white/10">
                     <h3 className="font-semibold text-lg text-white">Daily Wisdom</h3>
                     <div className="flex items-center gap-2">
-                        <button
-                            onClick={handleShuffle}
-                            disabled={isShuffling || isLoading}
-                            className={cn(
-                                "flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white/90 text-sm font-medium",
-                                (isShuffling || isLoading) && "opacity-50 cursor-not-allowed"
-                            )}
-                        >
-                            <RefreshCw className={cn("w-4 h-4", (isShuffling || isLoading) && "animate-spin")} />
-                            <span>Generate</span>
-                        </button>
                         <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 transition-colors text-white/70 hover:text-white">
                             <X className="w-5 h-5" />
                         </button>
@@ -308,7 +298,7 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
 
                         {/* Logo */}
                         <div className="flex justify-center mb-6 relative z-10">
-                            <div className="w-24 h-24 relative">
+                            <div className="w-16 h-16 relative">
                                 {/* Use Base64 source to ensure it captures correctly on mobile */}
                                 <Image
                                     src={logoBase64}
@@ -363,6 +353,15 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
 
                 {/* Actions */}
                 <div className="p-4 border-t border-white/10 grid grid-cols-2 gap-3">
+                    {onExplainQuote && (
+                        <button
+                            onClick={() => onExplainQuote(quote?.text || "")}
+                            className="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white py-3 rounded-xl font-medium transition-all active:scale-[0.98]"
+                        >
+                            <MessageSquare className="w-4 h-4" />
+                            <span>Explain</span>
+                        </button>
+                    )}
                     <button
                         onClick={handleShareQuote}
                         disabled={isSharing || isShuffling || isLoading || !quote}
