@@ -286,7 +286,6 @@ export default function ChatPage() {
                 return newMsgs;
             });
 
-<<<<<<< HEAD
             // Set error message in Lai language (Remh Ciami)
             if (error instanceof Error) {
                 if (error.message === 'TIMEOUT') {
@@ -297,23 +296,10 @@ export default function ChatPage() {
                     setError("API Key he pehtlai in buainak a um. Zangfah tein Administrator chawn hna.");
                 } else {
                     // General Error
-                    setError("Harnak tlawmpal a um. Zangfah tein tuah ṭhan.");
+                    setError("Technical error tlawmpal a um. Zaangfah tein tuah ṭhan.");
                 }
             } else {
-                setError("Harnak tlawmpal a um. Zangfah tein tuah ṭhan.");
-=======
-            // Set error message in Lai language
-            if (error instanceof Error) {
-                if (error.message === 'TIMEOUT') {
-                    setError("Hngak khawh a rei deuhdeuh. Tivei hnih in i fel law.");
-                } else if (error.message.includes('API Key')) {
-                    setError("API key biafelmiam a um. Administrator ah a hriamhnak petu.");
-                } else {
-                    setError("Biafelmiam a um. Tivei na fel bah law.");
-                }
-            } else {
-                setError("Biafelmiam a um. Tivei na fel bah law.");
->>>>>>> main
+                setError("Technical error tlawmpal a um. Zaangfah tein tuah ṭhan.");
             }
         } finally {
             setLoading(false);
@@ -321,7 +307,7 @@ export default function ChatPage() {
     };
 
     return (
-        <div className="flex h-screen bg-background text-foreground overflow-hidden">
+        <div className="flex h-screen bg-background text-foreground">
             <Sidebar
                 isOpen={sidebarOpen}
                 onNewChat={handleNewChat}
@@ -378,7 +364,7 @@ export default function ChatPage() {
                     </button>
                 </header>
 
-                <div className="flex-1 overflow-y-auto p-4 space-y-6">
+                <div className="flex-1 overflow-y-auto min-h-0 p-4 space-y-6">
                     {messages.length === 0 && (
                         <div className="flex flex-col items-center justify-center h-full text-muted-foreground opacity-50">
                             <div className="w-20 h-20 rounded-full overflow-hidden mb-4">
@@ -460,7 +446,7 @@ export default function ChatPage() {
                                                 }}
                                                 className="px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-sm transition-colors"
                                             >
-                                                Tivei fel biak
+                                                Try Again
                                             </button>
                                             <button
                                                 onClick={() => setError(null)}
