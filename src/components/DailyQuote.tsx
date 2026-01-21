@@ -104,7 +104,6 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
             const quoteWithId = { ...newQuote, id: Date.now() };
             setQuote(quoteWithId);
 
-            // Update storage with new shuffled quote for today
             const today = new Date().toISOString().split('T')[0];
             localStorage.setItem(STORAGE_KEY, JSON.stringify({
                 date: today,
@@ -112,7 +111,8 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
             }));
         } catch (error: any) {
             console.error("Failed to shuffle quote:", error);
-            setError(error.message || "An error occurred while generating. Please try again.");
+            // Updated error message to be distinct
+            setError(error.message || "Generation failed. Please check your internet connection.");
         } finally {
             setIsShuffling(false);
         }
@@ -122,10 +122,14 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
         if (!quoteRef.current || !quote) return;
 
         setIsSharing(true);
+        // Small delay to ensure rendering is complete (fixes black screen on some mobiles)
+        await new Promise(resolve => setTimeout(resolve, 100));
+
         try {
             const blob = await toBlob(quoteRef.current, {
                 cacheBust: true,
                 backgroundColor: '#09090b',
+                pixelRatio: 2, // Improve quality and sometimes fixes rendering
                 style: {
                     fontFamily: 'Inter, sans-serif'
                 }
@@ -135,6 +139,7 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
             saveAs(blob, `lai-ai-quote-${quote.id}.png`);
         } catch (err) {
             console.error('Error saving image:', err);
+            alert("Could not save image. Please try again.");
         } finally {
             setIsSharing(false);
         }
@@ -144,10 +149,14 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
         if (!quoteRef.current || !quote) return;
 
         setIsSharing(true);
+        // Small delay to ensure rendering is complete
+        await new Promise(resolve => setTimeout(resolve, 100));
+
         try {
             const blob = await toBlob(quoteRef.current, {
                 cacheBust: true,
                 backgroundColor: '#09090b',
+                pixelRatio: 2,
                 style: {
                     fontFamily: 'Inter, sans-serif'
                 }
@@ -185,6 +194,7 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
             }
         } catch (err) {
             console.error('Error sharing quote:', err);
+            alert("Could not share. Please try again.");
         } finally {
             setIsSharing(false);
         }
