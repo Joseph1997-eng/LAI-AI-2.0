@@ -89,15 +89,36 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
         }
     };
 
-    const handleShare = async () => {
+    const handleSaveImage = async () => {
         if (!quoteRef.current || !quote) return;
 
         setIsSharing(true);
         try {
-            // Wait a bit for images/fonts to load if needed
             const blob = await toBlob(quoteRef.current, {
                 cacheBust: true,
-                backgroundColor: '#09090b', // Dark background for the image
+                backgroundColor: '#09090b',
+                style: {
+                    fontFamily: 'Inter, sans-serif'
+                }
+            });
+
+            if (!blob) throw new Error("Failed to generate image blob");
+            saveAs(blob, `lai-ai-quote-${quote.id}.png`);
+        } catch (err) {
+            console.error('Error saving image:', err);
+        } finally {
+            setIsSharing(false);
+        }
+    };
+
+    const handleShareQuote = async () => {
+        if (!quoteRef.current || !quote) return;
+
+        setIsSharing(true);
+        try {
+            const blob = await toBlob(quoteRef.current, {
+                cacheBust: true,
+                backgroundColor: '#09090b',
                 style: {
                     fontFamily: 'Inter, sans-serif'
                 }
@@ -106,34 +127,35 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
             if (!blob) throw new Error("Failed to generate image blob");
 
             const file = new File([blob], `lai-ai-quote-${quote.id}.png`, { type: 'image/png' });
+            const appUrl = typeof window !== 'undefined' ? window.location.origin : 'https://lai-ai.vercel.app';
+            const shareText = `"${quote.text}"\n\n${quote.translation}\n- ${quote.author}\n\nGet your daily wisdom here: ${appUrl}`;
 
             if (navigator.share) {
                 try {
                     const shareData = {
                         title: 'Daily Wise Quote from LAI AI',
-                        text: `${quote.text}\n\n${quote.translation}\n- ${quote.author}`,
+                        text: shareText,
                         files: [file]
                     };
 
                     if (navigator.canShare && navigator.canShare(shareData)) {
                         await navigator.share(shareData);
                     } else {
-                        // Fallback if files sharing isn't supported but text is
+                        // Fallback: Share Text + Link only if file sharing fails checks
                         await navigator.share({
                             title: 'Daily Wise Quote from LAI AI',
-                            text: `${quote.text}\n\n${quote.translation}\n- ${quote.author}\n\n(Image saved to device)`,
+                            text: shareText,
+                            url: appUrl
                         });
-                        saveAs(blob, `lai-ai-quote-${quote.id}.png`);
                     }
                 } catch (err) {
                     console.error('Error sharing:', err);
-                    saveAs(blob, `lai-ai-quote-${quote.id}.png`);
                 }
             } else {
-                saveAs(blob, `lai-ai-quote-${quote.id}.png`);
+                alert("Sharing not supported on this device. Please use 'Save Image'.");
             }
         } catch (err) {
-            console.error('Error generating image:', err);
+            console.error('Error sharing quote:', err);
         } finally {
             setIsSharing(false);
         }
@@ -186,7 +208,7 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
 
                         {/* Logo */}
                         <div className="flex justify-center mb-6 relative z-10">
-                            <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-primary/20 shadow-lg">
+                            <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-primary/20 shadow-lg bg-white/10 backdrop-blur-md">
                                 <Image
                                     src="/joseph.jpg"
                                     alt="LAI AI"
@@ -239,11 +261,11 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
                 </div>
 
                 {/* Actions */}
-                <div className="p-4 border-t border-white/10 flex gap-3">
+                <div className="p-4 border-t border-white/10 grid grid-cols-2 gap-3">
                     <button
-                        onClick={handleShare}
+                        onClick={handleShareQuote}
                         disabled={isSharing || isShuffling || isLoading || !quote}
-                        className="flex-1 flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground py-3 rounded-xl font-medium transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground py-3 rounded-xl font-medium transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isSharing ? (
                             <>
@@ -258,10 +280,12 @@ export default function DailyQuote({ isOpen, onClose }: DailyQuoteProps) {
                         )}
                     </button>
                     <button
-                        onClick={onClose}
-                        className="px-6 py-3 rounded-xl font-medium text-white hover:bg-white/10 transition-colors border border-white/10"
+                        onClick={handleSaveImage}
+                        disabled={isSharing || isShuffling || isLoading || !quote}
+                        className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl font-medium transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Close
+                        <Download className="w-4 h-4" />
+                        Save Image
                     </button>
                 </div>
             </div>
