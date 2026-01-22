@@ -21,37 +21,37 @@ export const quotes: Quote[] = [
     {
         id: 3,
         text: "It does not matter how slowly you go as long as you do not stop.",
-        translation: "Na din lo paoh ahcun, zeizat in dah na kal muan ti a biapi lo.",
+        translation: "Na ngol lo chung paoh cun, zeitluk in na kal duhsah hmanh ah a poi lo.",
         author: "Confucius"
     },
     {
         id: 4,
         text: "Your time is limited, don't waste it living someone else's life.",
-        translation: "Na caan a tlawm, midang nun in nung hlah.",
+        translation: "Na caan a tawi, cucaah midang nun in nung in na caan pamhter hlah.",
         author: "Steve Jobs"
     },
     {
         id: 5,
         text: "The future belongs to those who believe in the beauty of their dreams.",
-        translation: "Hmailei cu an manh a dawhnak a zum mi hna ta a si.",
+        translation: "Hmailei cu an chunmang a dawhzia a zummi hna ta a si.",
         author: "Eleanor Roosevelt"
     },
     {
         id: 6,
         text: "Don't watch the clock; do what it does. Keep going.",
-        translation: "Nazi zoh hlah; amah nih a tuah mi kha tuah ve. Kal peng.",
+        translation: "Suimilam zoh hlah; amah nih a tuah bangin tuah ve. Kal peng ko.",
         author: "Sam Levenson"
     },
     {
         id: 7,
         text: "Success is not final, failure is not fatal: It is the courage to continue that counts.",
-        translation: "Awn nak hi a donghnak a si lo, sungh nak hi thih nak a si lo: Pehzulh ngam nak lungthin hi a biapi bik mi cu a si.",
+        translation: "Teinak cu a donghnak a si lo, sunghnak cu thihnak a si lo: Pehzulh dingin ralthatnak ngeih kha a biapi bik.",
         author: "Winston Churchill"
     },
     {
         id: 8,
         text: "You are never too old to set another goal or to dream a new dream.",
-        translation: "Hmuitinh thar chiah ding le manh thar man ding in na upa tuk bal lo.",
+        translation: "Tinhmi thar chiah dingin asiloah chunmang thar ngeih dingin na upa tuk bal lo.",
         author: "C.S. Lewis"
     },
     {
@@ -63,13 +63,13 @@ export const quotes: Quote[] = [
     {
         id: 10,
         text: "Life is 10% what happens to us and 90% how we react to it.",
-        translation: "Nunnak hi kan cung i a tlung mi 10% a si i, kan lehrulh ning hi 90% a si.",
+        translation: "Nunnak cu kan cungah a tlungmi 10% le kan lehrulh ning 90% a si.",
         author: "Charles R. Swindoll"
     },
     {
         id: 11,
         text: "With the new day comes new strength and new thoughts.",
-        translation: "Ni thar he thazaang thar le ruahnak thar an ra.",
+        translation: "Ni thar he thazaang thar le ruahnak thar a ra.",
         author: "Eleanor Roosevelt"
     },
     {
@@ -81,31 +81,31 @@ export const quotes: Quote[] = [
     {
         id: 13,
         text: "Quality is not an act, it is a habit.",
-        translation: "A ṭhatnak cu tuahnak men a si lo, ziaza tu a si.",
+        translation: "Tthatnak cu tuahmi men a si lo, ziaza a si.",
         author: "Aristotle"
     },
     {
         id: 14,
         text: "It always seems impossible until it's done.",
-        translation: "Tuah dih hlan paoh cu a si kho lo mi a lo lengmang.",
+        translation: "Tuah lim hlan lo paoh cu a si kho lo a lo zungzal.",
         author: "Nelson Mandela"
     },
     {
         id: 15,
         text: "Good, better, best. Never let it rest. 'Til your good is better and your better is best.",
-        translation: "A ṭha, a ṭha deuh, a ṭha bik. Na ṭha kha ṭha deuh, na ṭha deuh kha ṭha bik a si hlan lo din hlah.",
+        translation: "A ttha, a ttha deuh, a ttha bik. Zeitikhmanh i dinh hlah. Na tthatnak kha a ttha deuh in, na tthat deuhnak kha a ttha bik a si hlan lo.",
         author: "St. Jerome"
     },
     {
         id: 16,
         text: "Optimism is the faith that leads to achievement. Nothing can be done without hope and confidence.",
-        translation: "A ṭha lei in hmuh nak hi hlawhtlinnak lei hruaitu zumhnak a si. Ruahchannak le i zumhngamnak lo cun zeihmanh tuah khawh a si lo.",
+        translation: "A ṭha lei in hmuh nak hi hlawhtlinnak lei a hruaitu zumhnak a si. Ruahchannak le i zumhngamnak um lo cun zeihmanh tuah khawh a si lo.",
         author: "Helen Keller"
     },
     {
         id: 17,
         text: "Keep your face always toward the sunshine—and shadows will fall behind you.",
-        translation: "Ni ceu lei ah na hmai chit zungzal—cun thlaimun cu na hnu lei ah a um lai.",
+        translation: "Ni ceu lei ah na hmai hoih zungzal, cuticun na thlam cu na hnu lei ah an tla lai.",
         author: "Walt Whitman"
     },
     {
@@ -123,7 +123,7 @@ export const quotes: Quote[] = [
     {
         id: 20,
         text: "You don't have to be great to start, but you have to start to be great.",
-        translation: "I thawk ding in na ṭhat a hau lo, asinain ṭha ding in i thawk na hau.",
+        translation: "I Thawk dingin mi ttha na si a hau lo, asinain mi ttha si dingin na thawk a hau.",
         author: "Zig Ziglar"
     }
 ];
