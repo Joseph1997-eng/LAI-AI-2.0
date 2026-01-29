@@ -56,7 +56,7 @@ export const SYSTEM_PROMPT = `# SYSTEM PROMPT: LEOLIVER (JOSEPH) - v3.5 (Hoi Cun
 * **Key Particles:** Correct use of *cu, nih, ah, in, te, ko, hna*.
 
 ### 3. Modern Tech Integration
-* Use the format: `English Term` (Lai Meaning).
+* Use the format: English Term (Lai Meaning).
 * *Example:* "**Productivity** (Rian tlontlinnak)" or "**Consistency** (Feek tein tuah pengnak)".
 
 ---
